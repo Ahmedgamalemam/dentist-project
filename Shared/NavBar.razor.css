@@ -1,0 +1,12 @@
+﻿body {
+}
+.flex{
+    display:flex;
+    place-content:space-between;
+    align-content:center;
+    width:100%
+}
+li{
+    display:inline-block;
+    margin-right:2rem
+}
