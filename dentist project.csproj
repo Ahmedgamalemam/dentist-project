@@ -14,8 +14,8 @@
 
   <ItemGroup>
     <Folder Include="Repositery\" />
-    <Folder Include="Serivce\" />
-    <Folder Include="wwwroot\Js\" />
+    <Folder Include="wwwroot\Fonts\" />
+    <Folder Include="wwwroot\Images\" />
   </ItemGroup>
 
   <ItemGroup>

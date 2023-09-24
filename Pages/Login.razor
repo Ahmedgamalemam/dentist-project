@@ -2,5 +2,10 @@
 <h3>Login</h3>
 
 @code {
-
+    [Inject]
+    public IJSRuntime navjs { get; set; }
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        await navjs.InvokeVoidAsync("shownave");
+    }
 }

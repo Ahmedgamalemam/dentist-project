@@ -1,0 +1,229 @@
+﻿.container-signup {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.form-signup {
+    width: 100%;
+    max-width: 380px;
+    padding: 10px;
+    margin: auto;
+}
+
+.container-img {
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin-bottom:2rem
+}
+
+.profilechange {
+    border: 1px solid white;
+    width: 25px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 0.2px 1px, rgba(0, 0, 0, 0.16) 0px 0.2px 1px;
+    background-color: white;
+    color: #2b124c;
+    position: absolute;
+    bottom: 5px;
+    left: 57%;
+}
+label {
+    text-align: center;
+    margin: auto;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+.container-img input[type="file"] {
+    display: none;
+}
+
+.profilechange i {
+    padding: 5px;
+    cursor: pointer;
+    color: var(--white);
+}
+
+.profileicon {
+    font-size: 13px;
+}
+
+.color-text {
+    color: #2b124c;
+}
+
+.check {
+    display: flex;
+    justify-content: center;
+}
+
+.icons {
+    padding: 2px;
+    color: #5f5f5f;
+    font-size: 30px;
+}
+
+.icons2 {
+    padding: 7px;
+    color: #5f5f5f;
+    font-size: 20px;
+}
+
+
+.form-signup .form-control {
+    position: relative;
+    box-sizing: border-box;
+    height: auto;
+    padding: 10px;
+    font-size: 12px;
+}
+
+.form-signup .form-control:focus {
+    z-index: 2;
+}
+
+.input-container {
+    display: -ms-flexbox;
+    display: flex;
+    width: 100%;
+    position: relative;
+}
+
+.input-container2 {
+    display: -ms-flexbox;
+    display: flex;
+    width: 30%;
+    position: relative;
+}
+
+.input-container3 {
+    display: -ms-flexbox;
+    display: flex;
+    width: 45%;
+    position: relative;
+}
+
+.input-container4 {
+    display: -ms-flexbox;
+    display: flex;
+    width: 25%;
+    position: relative;
+}
+
+.form-signup .input-container > input[type="text"] {
+    padding: 10px 10px 10px 39px;
+    box-shadow: 0px 0px 2px 1px #eeeaea;
+    outline: 0;
+    border-color: #eeeaea;
+    font-size: 16px;
+    height: 50px;
+    position: relative;
+}
+
+.form-signup .input-container2 > input[type="text"], .input-container3 > input[type="text"] {
+    padding: 10px 10px 10px 33px;
+    box-shadow: 0px 0px 2px 1px #eeeaea;
+    outline: 0;
+    border-color: #eeeaea;
+    font-size: 16px;
+    height: 50px;
+    position: relative;
+}
+
+.form-signup input[type="number"] {
+    padding: 10px 10px 10px 33px;
+    box-shadow: 0px 0px 2px 1px #eeeaea;
+    outline: 0;
+    border-color: #eeeaea;
+    font-size: 16px;
+    height: 50px;
+    position: relative;
+}
+
+.form-signup input::placeholder {
+    color: #aeaeae;
+    font-size: 12px;
+}
+
+.icon {
+    color: #a7a7a7;
+    min-width: 15px;
+    position: absolute;
+    z-index: 3;
+    font-size: 16px;
+    top: 18px;
+    left: 15px;
+}
+
+.Addressicon {
+    color: #a7a7a7;
+    min-width: 15px;
+    position: absolute;
+    z-index: 3;
+    font-size: 16px;
+    top: 18px;
+    left: 23px;
+}
+.form-signup input[type="text"]:focus {
+    border: 1px solid #f7e3ac;
+    box-shadow: 0px 0px 2px 2px rgba(31, 149, 161, 0.2);
+}
+.input_i:focus + i {
+    color: #522b5b;
+}
+.color-button,
+.color-button:hover {
+    background-color: #f7e3ac;
+    color: white;
+    font-weight: bold;
+}
+.button {
+    margin: auto 35%;
+    background-color: #2b124c;
+    color:white
+}
+.form-signup input[type="email"] {
+    padding: 10px 10px 10px 39px;
+    box-shadow: 0px 0px 2px 1px #eeeaea;
+    outline: 0;
+    border-color: #eeeaea;
+    font-size: 16px;
+    height: 50px;
+    position: relative;
+}
+.form-signup input[type="password"] {
+    padding: 10px 10px 10px 39px;
+    box-shadow: 0px 0px 2px 1px #eeeaea;
+    outline: 0;
+    border-color: #eeeaea;
+    font-size: 16px;
+    height: 50px;
+    position: relative;
+}
+.form-signup input[type="text"] {
+    padding: 10px 10px 10px 39px;
+    box-shadow: 0px 0px 2px 1px #eeeaea;
+    outline: 0;
+    border-color: #eeeaea;
+    font-size: 16px;
+    height: 50px;
+    position: relative;
+}
+.span-eye, .span-eye-confirm {
+    position: absolute;
+    color: #f7e3ac;
+    top: 35%;
+    left: 90%;
+    cursor: pointer;
+    font-size: 12px;
+    z-index: 3;
+    min-width: 50px;
+}
+.form-signup input[type="email"]:focus,
+.form-signup input[type="password"]:focus,
+.form-signup input[type="text"]:focus {
+    border: 1px solid #f7e3ac;
+    box-shadow: 0px 0px 2px 2px rgba(31, 149, 161, 0.2);
+}

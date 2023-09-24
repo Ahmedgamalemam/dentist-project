@@ -1,0 +1,51 @@
+﻿<div class="hide-side"
+     id="side"
+    <!-- close button -->
+    <button class="close-side-btn" @onclick="OpenSide">
+        <i class="bi bi-x"
+           style="color: white; font-size: 1.8rem"
+        ></i>
+    </button>
+    <div class="flex">
+        <div>
+            <a class="nav-link active flex" aria-current="page" href="/">
+                <lord-icon src="https://cdn.lordicon.com/slduhdil.json"
+                            class="lord_icon"
+                            trigger="hover"
+                            scale="40"
+                            colors="primary:#ffffff"
+                            state="hover-2"
+                            >
+                        <h5 class="color_white">Home</h5>
+                </lord-icon>
+            </a>
+        </div>
+    </div>
+    <div class="nav-item" style="width:103%">
+        <a
+            class="nav-link btn button side-home"
+             href="/"
+            >Consultation</a>
+    </div>
+    <div class="nav-item" style="width:103%">
+        <a
+            class="nav-link btn button side-home"
+            href="/login"
+            >Login</a>
+    </div>
+    <div class="nav-item" style="width:103%">
+        <a
+            class="nav-link btn button side-home"
+            href="/register"
+            >Register</a>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    public IJSRuntime Js { get; set; }
+    public async void OpenSide()
+    {
+        await Js.InvokeVoidAsync("sidebar");
+    }
+}

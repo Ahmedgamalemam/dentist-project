@@ -1,0 +1,120 @@
+﻿.button {
+    margin-right: 10px;
+    min-width: 5rem;
+    color: white;
+}
+
+.color_white {
+    color: white !important;
+}
+
+.button:hover {
+    background-color: #2b124c;
+    color: white;
+}
+
+.button:active {
+    background-color: 2b124c;
+    border: none !important;
+    outline: none !important;
+}
+
+.flex {
+    display: flex;
+    flex-direction: column;
+    place-content: space-between;
+    align-content: center;
+    width: 10rem;
+    height: 4rem;
+    margin: auto;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+@font-face {
+    font-family: 'playball-regular';
+    src: url('../fonts/playball-regular.ttf') format('truetype');
+}
+
+.logo {
+    font-family: playball-regular;
+    font-size: 2rem;
+    margin: auto;
+    margin-bottom: -2rem;
+}
+
+@keyframes show {
+    from {
+        left: 0px;
+    }
+
+    to {
+        left: 15%;
+    }
+}
+
+@keyframes hide {
+    from {
+        left: 15%;
+    }
+
+    to {
+        left: -500px;
+    }
+}
+
+.hide-side {
+    display: none;
+    animation: hide 300ms linear 1 alternate both;
+}
+
+
+.show-side {
+    box-shadow: 4px 5px 2px rgb(80 55 77 / 53%);
+    background-color: #522b5b;
+    display: block;
+    height: 100%;
+    position: fixed;
+    z-index: 2000;
+    width: 40%;
+    margin-left: -15%;
+    animation: show 300ms linear 1 alternate both;
+}
+
+@media (min-width: 991.98px) {
+    .show-side {
+        animation: hide 300ms linear 1 alternate both;
+    }
+}
+
+.close-side-btn {
+    background-color:transparent;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    border: none;
+    margin-top: 3;
+    margin-right: 1.5rem;
+    position: absolute;
+    right: 0px;
+}
+
+.side-home {
+    margin-top: -5px;
+}
+
+.lord_icon {
+    width: 4rem;
+    height: 2.2rem;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+h5 {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-left: 3rem;
+    margin-top: .2rem;
+}

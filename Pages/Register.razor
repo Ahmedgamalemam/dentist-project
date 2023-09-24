@@ -1,6 +1,162 @@
 ﻿@page "/register"
-<h3>Register</h3>
+@using Microsoft.AspNetCore.Components.Forms;
+<div class="container-signup">
+    <form class="form-signup">
+        <h1 class="h3 mb-0 fw-bold text-center color-text">
+            SignUp
+        </h1>
+        <p class="fw-bold text-center mb-0 mt-1">Upload your image</p>
+        <div class="container-img">
+            <img id="ProfileImg"
+                 src="@imageurl"
+                 alt=""
+                 width="125"
+                 height="125" />
+
+            <label action="" class="profilechange">
+                <InputFile id="ProfileName" type="file" class="input_i" multiple />
+                <i class="fas fa-camera profileicon"></i>
+            </label>
+        </div>
+
+        <label class="fw-bold">First Name </label>
+        <div class="mb-2 input-container">
+            <input type="text"
+                   id="fname"
+                   @Fname
+                   name="Fname"
+                   class="form-control input_i"
+                   placeholder="Enter your first Name "
+                   required/>
+            <i class="fas fa-user icon"></i>
+        </div>
+
+        <label class="fw-bold">Last Name</label>
+        <div class="mb-2 input-container">
+            <input type="text"
+                   id="lname"
+                   @Lname
+                   name="Lname"
+                   class="form-control input_i"
+                   placeholder="Enter your last Name"
+                   required/>
+            <i class="fas fa-user icon"></i>
+        </div>
+
+        <label class="fw-bold">Age</label>
+        <div class="mb-2 input-container">
+            <input type="text"
+                   id="num"
+                   @Age
+                   name="Age"
+                   class="form-control input_i"
+                   placeholder="Enter your Age"
+                   required/>
+            <i class="fas fa-user-friends icon"></i>
+        </div>
+
+        <label class="fw-bold">Phone</label>
+        <div class="mb-2 input-container">
+            <input type="text"
+                   id="Phone"
+                   @Phone
+                   name="Phone"
+                   class="form-control input_i"
+                   placeholder="Enter your Phone"
+                   required/>
+            <i class="fas fa-phone-alt icon"></i>
+        </div>
+
+
+
+
+        <label for="inputEmail" class="fw-bold"> Email Address </label>
+        <div class="input-container mb-4">
+            <input type="email"
+                   id="inputEmail"
+                   @Email
+                   class="form-control input_i"
+                   placeholder="Enter your email"
+                   autofocus
+                   required />
+            <i class="fas fa-envelope icon"></i>
+        </div>
+
+        <label for="inputPassword" class="fw-bold"> Password </label>
+
+        <div class="mb-3 input-container">
+            <input type="text"
+                   id="inputPassword"
+                   @Password
+                   class="form-control input_i"
+                   placeholder="Enter your password"
+                   required />
+            <i class="fas fa-lock icon"></i>
+            @*<span class="span-eye">
+                <i class="fas fa-eye"></i>
+            </span>*@
+        </div>
+
+        <label for="inputPassword" class="fw-bold"> Confirm Password </label>
+        <div class="mb-4 input-container">
+            <input type="text"
+                   id="ConPassword"
+                   @bind-value="@confirmpass"
+                   @bind-value:event=""
+                   @onkeyup="confirmpassword"
+                   class="form-control input_i"
+                   placeholder="Enter your password"
+                   required />
+            <i class="fas fa-lock icon"></i>
+
+           @* <span class="span-eye-confirm">
+                <i class="fas fa-eye"></i>
+            </span>*@
+        </div>
+
+        <button type="submit"
+                class="mb-2 btn btn-lg btn-block fw-bold button"
+                [disabled]="!RegForm.valid"
+                @onclick="Adduser"
+        >
+            Finish
+        </button>
+    </form>
+</div>
 
 @code {
+    [Inject]
+    public IJSRuntime navjs { get; set; }
+    public string Fname { get; set; }
+    public string Lname { get; set; }
+    public int Age { get; set; }
+    public string Phone { get; set; }
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string confirmpass { get; set; }
 
+
+
+    private string imageurl { get; set; } = "/Images/Untitled.jpeg";
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        await navjs.InvokeVoidAsync("hidenave");
+
+    }
+    public void Adduser()
+    {
+        UserDto newuser = new UserDto()
+        {
+            Fname = Fname,
+            Lname = Lname,
+            Age = Age,
+            Phone = Phone,
+            Email = Email,
+            Password = Password
+        };
+    }
+    public void confirmpassword()
+    {
+        
+    }
 }
