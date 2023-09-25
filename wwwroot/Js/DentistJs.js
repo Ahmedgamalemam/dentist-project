@@ -7,3 +7,6 @@ function hidenave() {
 function shownave() {
     document.getElementById('navbar')?.classList.remove('hide_nav');
 }
+function settolocalstorage() {
+    document.getElementById('navbar')?.classList.remove('hide_nav');
+}

@@ -87,7 +87,8 @@ label {
 .input-container {
     display: -ms-flexbox;
     display: flex;
-    width: 100%;
+    width: 40%;
+    margin:auto;
     position: relative;
 }
 
@@ -153,7 +154,7 @@ label {
     position: absolute;
     z-index: 3;
     font-size: 16px;
-    top: 18px;
+    top: 10px;
     left: 15px;
 }
 
@@ -180,7 +181,7 @@ label {
     font-weight: bold;
 }
 .button {
-    margin: auto 35%;
+    margin: auto 45%;
     background-color: #2b124c;
     color:white
 }

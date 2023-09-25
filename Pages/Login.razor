@@ -1,11 +1,88 @@
 ﻿@page "/login"
-<h3>Login</h3>
+@inject ILocalStorageService localStorage
+<div class="container-login">
+    <EditForm Model="@login" class="form-signin">
+    <h1 class="h4 mb-3 fw-bold text-center color-text">
+      Login
+    </h1>
+        <div class="container-img mb-2 logo">
+     Logo
+    </div>
+
+
+    <label htmlFor="inputEmail" class="fw-bold"> Email </label>
+    <div class="mb-3 input-container">
+      <InputText
+        id="inputEmail"
+        class="form-control input_i"
+        style="padding-left:3rem;"
+        @bind-Value="@login.Email"
+        placeholder="Enter your email"
+        autofocus
+      />
+      <i class="fas fa-envelope icon"></i>
+    </div>
+    <ValidationMessage For="@(() => login.Email)" style="text-align:center" />
+
+
+    <label htmlFor="inputPassword" class="fw-bold"> Password </label>
+    <div class="mb-3 input-container">
+      <InputText
+        id="inputPassword"
+        class="form-control input_i"
+        style="padding-left:3rem;"
+        @bind-Value="@login.Password"
+        placeholder="Enter your password"        
+      />
+      <i class="fas fa-lock icon"></i>
+      @*<span class="span-eye">
+        <i class="fas fa-eye" (click)="getIcon()"></i>
+      </span>*@
+    </div>
+    <ValidationMessage For="@(() => login.Password)" style="text-align:center" />
+
+    <Button
+      class="mb-2 btn btn-lg btn-block fw-bold button"
+      type="submit"
+      @onclick="checklogin"
+    >
+      Login
+    </Button>
+
+    <p class="para-center text-center">
+      Create new account ?
+      <a
+        class="fw-bold color-text"
+        href="/register">
+        Sign Up
+      </a>
+    </p>
+  </EditForm>
+</div>
 
 @code {
     [Inject]
     public IJSRuntime navjs { get; set; }
+    public LoginDtos login { get; set; } = new LoginDtos();
+    [Inject]
+    public IUserservice userservice { get; set; }
+    [Inject]
+    public NavigationManager navigat { get; set; }
     protected override async void OnAfterRender(bool firstRender)
     {
         await navjs.InvokeVoidAsync("shownave");
+    }
+    public async void checklogin()
+    {
+        LoginDtos userlogin = new LoginDtos()
+        {
+            Email = login.Email,
+            Password = login.Password
+        };
+        var loginchecked = await userservice.Login(userlogin);
+        await localStorage.SetItemAsync("token", loginchecked.JWT);
+        await localStorage.SetItemAsync("id", loginchecked.Id);
+
+        navigat.NavigateTo("/home");
     }
 }

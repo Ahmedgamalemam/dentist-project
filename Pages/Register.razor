@@ -1,11 +1,14 @@
 ﻿@page "/register"
 @using Microsoft.AspNetCore.Components.Forms;
+@using dentist_model
 <div class="container-signup">
-    <form class="form-signup">
+    <EditForm Model="@user" class="form-signup">
+        <DataAnnotationsValidator/>
+
         <h1 class="h3 mb-0 fw-bold text-center color-text">
             SignUp
         </h1>
-        <p class="fw-bold text-center mb-0 mt-1">Upload your image</p>
+       @* <p class="fw-bold text-center mb-0 mt-1">Upload your image</p>
         <div class="container-img">
             <img id="ProfileImg"
                  src="@imageurl"
@@ -17,146 +20,146 @@
                 <InputFile id="ProfileName" type="file" class="input_i" multiple />
                 <i class="fas fa-camera profileicon"></i>
             </label>
-        </div>
+        </div>*@
 
         <label class="fw-bold">First Name </label>
         <div class="mb-2 input-container">
-            <input type="text"
+            <InputText
                    id="fname"
-                   @Fname
+                   @bind-Value="@user.Fname"
                    name="Fname"
+                   style="padding-left:3rem;"
                    class="form-control input_i"
-                   placeholder="Enter your first Name "
-                   required/>
+                   placeholder="Enter your first Name"
+                   />
             <i class="fas fa-user icon"></i>
         </div>
+        <ValidationMessage For="@(() => user.Fname)" style="text-align:center" />
 
         <label class="fw-bold">Last Name</label>
         <div class="mb-2 input-container">
-            <input type="text"
+            <InputText
                    id="lname"
-                   @Lname
+                   @bind-Value="@user.Lname"
                    name="Lname"
+                   style="padding-left:3rem;"
                    class="form-control input_i"
                    placeholder="Enter your last Name"
-                   required/>
+                   />
             <i class="fas fa-user icon"></i>
         </div>
+        <ValidationMessage For="@(() => user.Lname)" style="text-align:center" />
 
         <label class="fw-bold">Age</label>
         <div class="mb-2 input-container">
-            <input type="text"
+            <InputNumber
                    id="num"
-                   @Age
+                   @bind-Value="@user.Age"
                    name="Age"
+                   style="padding-left:3rem;"
                    class="form-control input_i"
                    placeholder="Enter your Age"
-                   required/>
+                   />
             <i class="fas fa-user-friends icon"></i>
         </div>
+        <ValidationMessage For="@(() => user.Age)" style="text-align:center" />
 
         <label class="fw-bold">Phone</label>
         <div class="mb-2 input-container">
-            <input type="text"
+            <InputText
                    id="Phone"
-                   @Phone
+                   @bind-Value="@user.Phone"
                    name="Phone"
+                   style="padding-left:3rem;"
                    class="form-control input_i"
                    placeholder="Enter your Phone"
-                   required/>
+                   />
             <i class="fas fa-phone-alt icon"></i>
         </div>
+        <ValidationMessage For="@(() => user.Phone)" style="text-align:center" />
 
 
 
 
         <label for="inputEmail" class="fw-bold"> Email Address </label>
         <div class="input-container mb-4">
-            <input type="email"
+            <InputText
                    id="inputEmail"
-                   @Email
+                   @bind-Value="@user.Email"
+                   style="padding-left:3rem;"
                    class="form-control input_i"
                    placeholder="Enter your email"
                    autofocus
-                   required />
+                   />
             <i class="fas fa-envelope icon"></i>
         </div>
+        <ValidationMessage For="@(() => user.Email)" style="text-align:center" />
 
         <label for="inputPassword" class="fw-bold"> Password </label>
-
         <div class="mb-3 input-container">
-            <input type="text"
+            <InputText
                    id="inputPassword"
-                   @Password
-                   class="form-control input_i"
+                   @bind-Value="@user.Password"
+                       style="padding-left:3rem;"
+                       class="form-control input_i"
                    placeholder="Enter your password"
-                   required />
+                   />
             <i class="fas fa-lock icon"></i>
             @*<span class="span-eye">
                 <i class="fas fa-eye"></i>
             </span>*@
         </div>
+        <ValidationMessage For="@(() => user.Password)" style="text-align:center" />
 
         <label for="inputPassword" class="fw-bold"> Confirm Password </label>
         <div class="mb-4 input-container">
-            <input type="text"
+            <InputText
                    id="ConPassword"
-                   @bind-value="@confirmpass"
-                   @bind-value:event=""
-                   @onkeyup="confirmpassword"
-                   class="form-control input_i"
+                   @bind-Value="@user.ConfirmPassword"
+                       style="padding-left:3rem;"
+                       class="form-control input_i"
                    placeholder="Enter your password"
-                   required />
+                   />
             <i class="fas fa-lock icon"></i>
-
            @* <span class="span-eye-confirm">
                 <i class="fas fa-eye"></i>
             </span>*@
         </div>
+        <ValidationMessage For="@(() => user.ConfirmPassword)" style="text-align:center"/>
 
         <button type="submit"
                 class="mb-2 btn btn-lg btn-block fw-bold button"
-                [disabled]="!RegForm.valid"
-                @onclick="Adduser"
-        >
+                @onclick="Adduser">
             Finish
         </button>
-    </form>
+    </EditForm>
 </div>
 
 @code {
     [Inject]
     public IJSRuntime navjs { get; set; }
-    public string Fname { get; set; }
-    public string Lname { get; set; }
-    public int Age { get; set; }
-    public string Phone { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string confirmpass { get; set; }
+    [Inject]
+    public IUserservice userservice { get; set; }
+    [Inject]
+    public NavigationManager navigat { get; set; }
+    public UserDtos user { get; set; } = new UserDtos();
 
-
-
-    private string imageurl { get; set; } = "/Images/Untitled.jpeg";
     protected override async void OnAfterRender(bool firstRender)
     {
         await navjs.InvokeVoidAsync("hidenave");
-
     }
-    public void Adduser()
+    public async void Adduser()
     {
-        UserDto newuser = new UserDto()
+        UserDtos newuser = new UserDtos()
         {
-            Fname = Fname,
-            Lname = Lname,
-            Age = Age,
-            Phone = Phone,
-            Email = Email,
-            Password = Password
+            Fname = user.Fname,
+            Lname = user.Lname,
+            Age = user.Age,
+            Phone = user.Phone,
+            Email = user.Email,
+            Password = user.Password
         };
-    }
-    public void confirmpassword()
-    {
-        
+        var response = userservice.AddUser(newuser);
+        navigat.NavigateTo("/login");
     }
 }
