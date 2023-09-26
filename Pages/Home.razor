@@ -1,17 +1,59 @@
 ﻿@page "/home"
 @page "/"
 
+<div class="slideshow-container">
+    <img class="mySlides" style="height:42rem" src="/Images/Doctor.gif" />
+</div>
+<div class="aboutuscontainer" @onmouseover="show_div">
+    <h1 style="color:white;margin-bottom:4rem;">Our Service</h1>
+    <div class="row aboutus">
+        <div class="card col-4 col-md-4 col-sm-6 div" style="width: 18rem;"@ondr="sss" >
+            <h5>Orthodontics</h5>
+            <img src="/Images/ortho.jpeg" class="card-img-top img" />
+        </div>
 
+        <div class="card col-lg-4 col-md-4 col-sm-6 div" style="width: 18rem;">
+            <h5>Bleaching teeth</h5>
+            <img src="/Images/bleaching.jpeg" class="card-img-top img" />
+        </div>
 
+        <div class="card col-lg-4 col-md-4 col-sm-6 div" style="width: 18rem;">
+            <h5>Dental fillings</h5>
+            <img src="/Images/dolgu.jpeg" class="card-img-top img" />
+        </div>
 
+        <div class="card col-lg-4 col-md-4 col-sm-6 div" style="width: 18rem;">
+            <h5>tooth implant</h5>
+            <img src="/Images/putteeth.jpeg" class="card-img-top img" />
+        </div>
+        <div class="card col-lg-4 col-md-4 col-sm-6 div" style="width: 18rem;">
+            <h5>Cleaning Teeth</h5>
+            <img src="/Images/clean.jpeg" class="card-img-top img" />
+        </div>
+        <div class="card col-lg-4 col-md-4 col-sm-6 div" style="width: 18rem;">
+            <h5>Performing Surgical</h5>
+            <img src="/Images/images.jpeg" class="card-img-top img" />
+        </div>
+    </div>
+</div>
+<div>
 
+</div>
 
-
+<Sliderden/>
 @code {
     [Inject]
     public IJSRuntime navjs { get; set; }
     protected override async void OnAfterRender(bool firstRender)
     {
         await navjs.InvokeVoidAsync("shownave");
+    }
+    public void show_div()
+    {
+        navjs.InvokeVoidAsync("show_div");
+    }
+    public void sss()
+    {
+        navjs.InvokeVoidAsync("console.log", "ahmed");
     }
 }

@@ -1,4 +1,5 @@
-﻿<div class="hide-side"
+﻿@inject ILocalStorageService localStorage
+<div class="hide-side"
      id="side"
     <!-- close button -->
     <button class="close-side-btn" @onclick="OpenSide">
@@ -44,6 +45,12 @@
 @code {
     [Inject]
     public IJSRuntime Js { get; set; }
+    public string jwt { get; set; }
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        jwt = await localStorage.GetItemAsStringAsync("token");
+        base.OnAfterRender(firstRender);
+    }
     public async void OpenSide()
     {
         await Js.InvokeVoidAsync("sidebar");

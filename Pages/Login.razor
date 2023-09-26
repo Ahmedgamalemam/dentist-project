@@ -70,7 +70,7 @@
     public NavigationManager navigat { get; set; }
     protected override async void OnAfterRender(bool firstRender)
     {
-        await navjs.InvokeVoidAsync("shownave");
+        await navjs.InvokeVoidAsync("hidenave");
     }
     public async void checklogin()
     {

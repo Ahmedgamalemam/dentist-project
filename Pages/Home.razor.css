@@ -1,0 +1,76 @@
+﻿.mySlides {
+    width: 100.5%;
+    height: 26rem;
+    margin-top: -2rem;
+    box-shadow: 0px 1px 10px 2px #522b5b;
+    transform: translate3d(5px, 5px, 30em);
+}
+
+.slideshow-container {
+    width: 104.6%;
+    position: relative;
+    left: -0.5rem;
+    margin-left: -2.1%;
+}
+h1{
+    margin:3rem 0 2rem;
+    text-align:center;
+
+}
+
+.aboutuscontainer {
+    cursor: url('~/Images/whitedentist.png'), auto;
+    width: 80%;
+    overflow: hidden;
+    margin: auto;
+    background-image: linear-gradient(100deg, #7e2d99 12%, transparent);
+    border: 1rem solid #945ba7;
+    border-top-color: #ddd;
+    border-left-color: #ddd;
+    border-radius: 3rem;
+    margin: auto;
+    margin-top: 2rem;
+}
+.aboutus {
+    width: 78%;
+    margin: auto;
+    justify-content: space-between;
+}
+.img {
+    width: 100%;
+    height: 100%;
+    border-radius: 2rem;
+}
+h5 {
+    color:white;
+    position: absolute;
+    left: 30%;
+    top: -11%;
+}
+@keyframes showcard {
+    from {
+        bottom: 54rem;
+    }
+
+    to {
+        bottom: 0rem;
+    }
+}
+.div {
+    display: none;
+    position: relative;
+    width: 22rem;
+    height: 20rem;
+    margin-bottom: 4rem;
+    border-radius: 2rem;
+    padding: 0px;
+}
+.div:hover {
+box-shadow: 2px 1px 0px 2px #522b5b;
+transform: translate3d(5px, 5px, 30em);
+}
+.show_div {
+    display: block;
+    cursor: url('/Images/images.png'), auto;
+    animation: showcard 900ms linear 1 alternate both;
+}

@@ -55,11 +55,11 @@
 
 @keyframes hide {
     from {
-        left: 15%;
+        bottom: 55rem;
     }
 
     to {
-        left: -500px;
+        bottom: 0rem;
     }
 }
 
