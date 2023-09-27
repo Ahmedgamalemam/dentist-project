@@ -1,0 +1,319 @@
+﻿@page "/chat"
+@inject ILocalStorageService localStorage
+@if (delete_message != null || update_message != null)
+{
+
+    <div style="width: 100%;height: 100%;position: fixed;display: flex;z-index: 2000;
+         background-color: rgb(255 255 255 / 42%);justify-content: center;align-items: center;"
+         id="update_and_delete" >
+        @if (delete_message != null)
+        {
+
+            <div class="delete_message back_purple_light">
+                @if (delete_message.Sid == sid && delete_message.SidDelete == 0)
+                {
+                    <button class="rounded-pill" @onclick="delete_from_all">
+                        <h3>Delete from all</h3>
+                    </button>
+                }
+                @if ((delete_message.Rid == sid && delete_message.RidDelete == 0) ||
+               (delete_message.Sid == sid && delete_message.SidDelete == 0))
+                {
+                    <button class="rounded-pill" @onclick="delete_from_me">
+                        <h3>Delete from me</h3>
+                    </button>
+                }
+                @if ((this.delete_message.Rid == sid &&
+               this.delete_message.RidDelete == 1) ||
+               (this.delete_message.Sid == sid && this.delete_message.SidDelete == 1))
+                {
+                    <button class="rounded-pill" @onclick="delete">
+                        <h3>Delete</h3>
+                    </button>
+                }
+
+                <button @onclick="cancel" class="rounded-pill"><h3>Cancel</h3></button>
+            </div>
+        }
+        @if (update_message != null)
+        {
+
+
+            <div class="delete_message flex_column back_purple_light" style="height: 22rem; overflow: hidden">
+                <div style="width: 100%; text-align: end">
+                    <button class="close-side-btn"
+                    @onclick="cancel"
+                            style="margin-right: 2rem">
+                        <i class="bi bi-x" style="color: white; font-size: 1.8rem"></i>
+                    </button>
+                </div>
+                <div class="update_message">
+                    <h6 class="color_white">Old message</h6>
+                    <p class="rounded-pill">@update_message.Txt</p>
+                </div>
+
+                <div class="update_message">
+                    <h6 class="color_white">New message</h6>
+                    <p class="rounded-pill">@new_Message</p>
+                </div>
+
+                <div class="back_purple_light flex_row" style="width: 100%; height: 9rem">
+                    <button @onclick="showEmojie_In_updateMsg">
+                        <i class="bi bi-emoji-smile color_white"></i>
+                    </button>
+
+                    <div class="input_message">
+                        <div style="border: none"
+                             contenteditable="true"
+                        @onclick="newmessage"
+                             id="update_message"></div>
+                    </div>
+
+                    <button @onclick="updatemessages">
+                        <i class="bi bi-send-fill color_white"></i>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="row"
+     style="width: 100%;position: relative;height: 100%;max-height: 100%;overflow-y: hidden;">
+
+    @if (chat != true)
+    {
+        <div class="col-lg-8 col-md-8 col-sm-6 back_purple_dark flex_row_center" id="addressfield">
+            <h1 class="color_white logo">
+                Fluffy <br />
+                Chat
+            </h1>
+        </div>
+    }
+    @if (chat == true)
+    {
+        <div id="messagefield" class="col-lg-8 col-md-8 col-sm-6"
+             style="overflow: hidden; --bs-gutter-x: 0.9rem; max-height: 101.3%;display:flex;flex-direction:column">
+            <div style="width: 105%; padding-left: 2rem; height: 6rem; margin-left: -1rem"
+                 class="back_purple_light flex_row_spacebetween color_white">
+                <div>
+                    <img src="@friend.Image" class="image" />
+                    <h6 style="display: inline-block; margin-left: 1rem">
+                        @friend.Fname @friend.Lname
+                    </h6>
+                </div>
+                <div style="color: white; width: fit-content; height: fit-content">
+                    @friend.Typing
+                </div>
+                @if (friend.Seen != "Active Now" && friend.Seen != null)
+                {
+                    <div style="margin-right: 2rem">
+                        <p>
+                            <span>Last seen at</span>
+                            @friend.Seen
+                        </p>
+                    </div>
+                }
+            </div>
+        </div>
+        <!-- messages -->
+        <div style="width: 102.5%;overflow-y: auto;display: flex;flex-direction: column-reverse;
+                       padding: 2rem 1rem;height: 35rem;max-height: 35rem;margin-left: -1rem;" id="message">
+            <div></div>
+            <div>
+                @for (var i = 0; i < friend_Chat.Count; i++)
+                {
+                    <div id="@i">
+                        @if (friend_Chat[i].Read != 2 && friend_Chat[i].Sid == rid &&
+                       unreadmessage != 0 && showUnreadMessageElement(i) == true)
+                        {
+                            <div style="margin: 2rem 0rem;text-align: center;width: 100%;background-color: #ddd;"
+                                 id="unreadmessages">
+                                (@unreadmessage) unread message
+                            </div>
+                        }
+                        @if (!(friend_Chat[i].Rid == sid && friend_Chat[i].RidDelete >= 2) || friend_Chat[i].SidDelete >= 5 ||
+                       (friend_Chat[i].Sid == sid && friend_Chat[i].SidDelete >= 2) || showDate(i) == false)
+                        {
+                            <div class="color_white back_purple_dark message_date" style="display:flex">
+                                <h4 style="margin: auto">
+                                    @if (date(friend_Chat[i].Date) == 1)
+                                    {
+                                        <span>@friend_Chat[i].Date</span>
+                                    }
+                                    else if (date(friend_Chat[i].Date) == 2)
+                                    {
+                                        <span>@weekDays[getday(friend_Chat[i].Date)]</span>
+                                    }
+                                </h4>
+                            </div>
+                        }
+
+                        @if (!(friend_Chat[i].Rid == sid && friend_Chat[i].RidDelete >= 1) ||
+                       friend_Chat[i].SidDelete >= 5 || (friend_Chat[i].Sid == sid && friend_Chat[i].SidDelete >= 1))
+                        {
+                            <div [ngClass]="{sidparent: message.sid == sid,ridparent: message.sid != sid}"
+                                 style="display:flex" class="rounded-pill">
+                                <div class="msg_emojie_container"
+                                     [ngClass]="{
+                                            msg_emojie_container_sid: message.sid == sid,
+                                            msg_emojie_container_rid: message.sid != sid
+                                          }">
+                                    <div class="back_purple_light xxx" style="position: relative">
+                                        <div [ngClass]="{
+                                              sid: message.sid == sid,
+                                              rid_purple: message.sid != sid
+                                                }" style="position: relative">
+
+
+                                            <p class="message_text">@friend_Chat[i].Txt</p>
+                                            <p class="message_time">
+                                                @friend_Chat[i].Time
+                                                if(message.read == 0 && message.sid == sid){
+                                                <span style="font-size: 1.2rem"><i class="bi bi-check2"></i></span>
+                                                }else if(message.read != 0 && message.sid == sid){
+                                                @if (friend_Chat[i].Read == 2)
+                                                {
+                                                    <span style="font-size: 1.2rem;color: rgb(0, 247, 255)">
+                                                        <i class="bi bi-check2-all"></i>
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="font-size: 1.2rem;color: #999696">
+                                                        <i class="bi bi-check2-all"></i>
+                                                    </span>
+                                                }
+                                                }
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="back_purple_light flex_row"
+                 style="padding: 1rem 3rem;width: 101.6%;margin-left: -0.8%;
+                            z-index: 2;position: relative;height: 9rem;">
+
+                <div class="input_message">
+                    <div style="border: none" contenteditable="true" id="input"
+                    @onblur="sendIsTyping" @onfocus="sendIsTyping">
+                    </div>
+                </div>
+
+                <button @onclick='() => sendmessage()'>
+                    <i class="bi bi-send-fill color_white"></i>
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- open side -->
+    <button @onclick="openside"
+            id="openside"
+            class="disblay_none openandcloseside openside">
+        <i class="bi bi-chevron-double-left"></i>
+    </button>
+    <!-- close side -->
+    <button @onclick="closeside"
+            id="closeside"
+            class="disblay_none openandcloseside">
+        <i class="bi bi-chevron-double-right"></i>
+    </button>
+
+
+    <!-- side -->
+    <div id="side"
+         class="col-lg-4 col-md-4 col-sm-6 back_purple_light side"
+         style="padding-top: 3rem; max-height: 100%; overflow-y: auto">
+        <div class="flex_row"
+             style="margin: -2rem 0rem 2rem">
+            <button @onclick="buttonfilter"
+                    id="buttonfilter"
+                    style="font-size: 1.8rem; width: 10%; border-radius: 50%; color: white">
+                <i class="bi bi-filter"></i>
+            </button>
+
+            <input style="width: 84%"
+                   matInput
+                   class="form-control me-2 inputsearch search-side"
+                   type="search"
+                   placeholder="Search"
+                   aria-label="Search"
+            @onkeyup="searchFilter" />
+        </div>
+        @if (toggle == true && users.Count == 0)
+        {
+            <div style="width: fit-content; position: relative; top: 39%; margin: auto">
+                <h6>no unread messages was found</h6>
+            </div>
+        }
+        @foreach (var user in users)
+        {
+            <button style="height: 5rem; margin-bottom: 2rem; width: 100%" @onclick="() => message_friend(user)">
+                <a>
+                    <div class="row">
+                        <div class="col-3">
+                            <img src="@user.Image" class="image" />
+                        </div>
+                        <div class="col-9" style="overflow: hidden; height: 5rem">
+                            <h4 class="color_white">
+                                <span>@user.Fname </span>
+                                <span>@user.Lname </span>
+                            </h4>
+                            <div class="row">
+                                @if (user.CountUnReadMs != 0 && user.Id == user.Chat[user.Chat.Count - 1].Sid)
+                                {
+                                    <p style="width: 2.5rem;height: 2.5rem;padding: 0.5rem;display: inline-block;border-radius: 50%;color: white;"
+                                       class="back_yellow_dark col-3">
+                                        {{ user.countUnReadMs }}
+                                    </p>
+                                }
+                                <div style="display: flex;flex-direction: column-reverse;overflow: hidden;position: relative;"
+                                     [ngStyle]="
+                                        user.countUnReadMs != 0 &&
+                                        user.id == user.chat[user.chat.length - 1].sid
+                                        ? { bottom: '3rem', left: '2rem' }
+                                        : { bottom: '0rem', left: '0rem' }
+                                    ">
+                                    @foreach (var messages in user.Chat)
+                                    {
+                                        @if ((messages.Rid == sid && messages.RidDelete >= 1 && messages.RidDelete <= 5) ||
+                                       messages.SidDelete == 5 || (messages.Sid == sid && messages.SidDelete >= 1 && messages.SidDelete <= 5))
+                                        {
+                                            <div class="color_white col-9" style="overflow: hidden">
+                                                <p>
+                                                    @if (messages.Sid == sid && messages.SidDelete == 6)
+                                                    {
+                                                        <span>You</span>
+                                                    }
+                                                    else if (messages.Rid == sid && messages.SidDelete == 6)
+                                                    {
+                                                        <span>@user.Fname</span>
+                                                    }
+                                                    @messages.Txt
+                                                </p>
+                                            </div>
+                                        }
+
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (user != users[users.Count - 1])
+                    {
+                        <hr />
+                    }
+                </a>
+            </button>
+        }
+
+    </div>
+
+
+</div>

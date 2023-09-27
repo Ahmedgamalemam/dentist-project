@@ -18,25 +18,3 @@ function show_div() {
         item.classList.add("show_div");
     });
 }
-
-
-function enableDragAndDrop(elementId) {
-    const element = document.getElementById(elementId);
-
-    element.draggable = true;
-
-    element.addEventListener("dragstart", function (e) {
-        e.dataTransfer.setData("text/plain", elementId);
-    });
-}
-
-function allowDrop(event) {
-    event.preventDefault();
-}
-
-function drop(event) {
-    event.preventDefault();
-    const elementId = event.dataTransfer.getData("text/plain");
-    const draggedElement = document.getElementById(elementId);
-    event.target.appendChild(draggedElement);
-}

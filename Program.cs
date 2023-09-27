@@ -14,6 +14,8 @@ builder.Services.AddBlazoredLocalStorage();
 //connect Api
 builder.Services.AddHttpClient<IUserservice, Userservice>(
     client => client.BaseAddress = new Uri("https://localhost:7008"));
+builder.Services.AddHttpClient<IChatTraditional, ChatTraditional>(
+    client => client.BaseAddress = new Uri("https://localhost:7008"));
 
 var app = builder.Build();
 
