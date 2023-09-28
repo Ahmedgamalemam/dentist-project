@@ -2,6 +2,9 @@
     padding: 0px 3rem;
     box-shadow: 0px 3px 5px 2px rgb(80 55 77 / 53%)
 }
+a {
+    cursor: url('/Images/Layer 222.png'), auto;
+}
 .hide_nav{
     display:none !important;
 }

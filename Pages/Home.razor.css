@@ -19,20 +19,21 @@ h1{
 }
 
 .aboutuscontainer {
-    cursor: url('~/Images/whitedentist.png'), auto;
-    width: 80%;
+    cursor: url(~/Images/Layer 222.png), auto;
+    width: 90%;
+    box-shadow: 0px -1px 4px 9px #ddd;
     overflow: hidden;
     margin: auto;
     background-image: linear-gradient(100deg, #7e2d99 12%, transparent);
-    border: 1rem solid #945ba7;
-    border-top-color: #ddd;
-    border-left-color: #ddd;
+    border: 0.5rem solid #945ba7;
+    border-top-color: white;
+    border-left-color: white;
     border-radius: 3rem;
     margin: auto;
     margin-top: 2rem;
 }
 .aboutus {
-    width: 78%;
+    width: 65%;
     margin: auto;
     justify-content: space-between;
 }
@@ -71,6 +72,6 @@ transform: translate3d(5px, 5px, 30em);
 }
 .show_div {
     display: block;
-    cursor: url('/Images/images.png'), auto;
+    cursor: url('/Images/Layer 222.png'), auto;
     animation: showcard 900ms linear 1 alternate both;
 }

@@ -8,6 +8,9 @@
 .hide_footer {
     display: none !important;
 }
+a {
+    cursor: url('/Images/Layer 222.png'), auto;
+}
 body {
     display: flex;
     background: white;

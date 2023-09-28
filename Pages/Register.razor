@@ -8,19 +8,37 @@
         <h1 class="h3 mb-0 fw-bold text-center color-text">
             SignUp
         </h1>
-       @* <p class="fw-bold text-center mb-0 mt-1">Upload your image</p>
+
+
+
+
+
+
+        <p class="fw-bold text-center mb-0 mt-1">Upload your image</p>
         <div class="container-img">
             <img id="ProfileImg"
-                 src="@imageurl"
+                 src="/Images/Untitled.jpeg"
                  alt=""
                  width="125"
                  height="125" />
 
             <label action="" class="profilechange">
-                <InputFile id="ProfileName" type="file" class="input_i" multiple />
+                <input id="ProfileName"
+                       type="file"
+                       class="input_i input_i_purple"
+                       @onchange="onFileSelected"
+                        />
                 <i class="fas fa-camera profileicon"></i>
             </label>
-        </div>*@
+        </div>
+
+
+
+
+
+
+
+
 
         <label class="fw-bold">First Name </label>
         <div class="mb-2 input-container">
@@ -143,6 +161,7 @@
     [Inject]
     public NavigationManager navigat { get; set; }
     public UserDtos user { get; set; } = new UserDtos();
+    public int MyProperty { get; set; }
 
     protected override async void OnAfterRender(bool firstRender)
     {
@@ -161,5 +180,9 @@
         };
         var response = userservice.AddUser(newuser);
         navigat.NavigateTo("/login");
+    }
+    public async void onFileSelected()
+    {
+        await navjs.InvokeVoidAsync("onFileSelected");
     }
 }

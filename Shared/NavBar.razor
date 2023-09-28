@@ -25,20 +25,21 @@
                         </div>
                         <div>
                             @if(!string.IsNullOrEmpty(jwt)){
-                                    <li class="nav-item">
-                                        <a class="nav-link active color_white" aria-current="page" href="/">Consultation</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link active color_white" aria-current="page" href="/" @onclick="logout">Logout</a>
-                                    </li>
-                                    <a class="nav-item" href="/chat">
-                                        <lord-icon src="https://cdn.lordicon.com/hpivxauj.json"
-                                                   trigger="hover"
-                                                   colors="primary:#ffffff"
-                                                   state="intro"
-                                                   style="width:50px;height:50px">
-                                        </lord-icon>
-                                    </a>
+                                    <div style="display:flex;justify-content:space-between;align-items:center">
+                                        <a class="nav-link active color_white" style="position: relative;bottom: 20.2%;" aria-current="page" href="/">Consultation</a>
+                                    
+                                        <a class="nav-link active color_white" style="position: relative;bottom: 20.2%;" aria-current="page" href="/" @onclick="logout">Logout</a>
+                                        <li class="nav-item">
+                                            <a class="nav-item" href="/chat">
+                                                <lord-icon src="https://cdn.lordicon.com/hpivxauj.json"
+                                                           trigger="hover"
+                                                           colors="primary:#ffffff"
+                                                           state="hover"
+                                                           style="width:50px;height:50px">
+                                                </lord-icon>
+                                            </a>
+                                        </li>
+                                    </div>
                             }
                             else
                             {
@@ -74,7 +75,6 @@
     public async void logout()
     {
         await localStorage.RemoveItemAsync("token");
-        await localStorage.RemoveItemAsync("id");
     }
 
 }

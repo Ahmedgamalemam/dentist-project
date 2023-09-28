@@ -68,10 +68,7 @@
     public IUserservice userservice { get; set; }
     [Inject]
     public NavigationManager navigat { get; set; }
-    protected override async void OnAfterRender(bool firstRender)
-    {
-        await navjs.InvokeVoidAsync("hidenave");
-    }
+  
     public async void checklogin()
     {
         LoginDtos userlogin = new LoginDtos()
