@@ -1,4 +1,10 @@
-﻿.flex_column {
+﻿.main_container {
+    width: 103%;
+    position: relative;
+    left: -2rem;
+    overflow-y: hidden;
+}
+.flex_column {
     display: flex;
     flex-direction: column;
     place-content: space-evenly;
@@ -409,7 +415,6 @@ button {
     }
 }
 
- purple theme 
 .back_purple_dark {
     background-color: #2b124c;
 }
@@ -447,6 +452,14 @@ button {
     align-items: center;
 }
 
-    .active_delete > ul {
-        display: block;
-    }
+.active_delete > ul {
+    display: block;
+}
+.left {
+    bottom: 3rem;
+    left: 2rem
+}
+.right {
+    bottom: 0rem;
+    left: 0rem
+}

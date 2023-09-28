@@ -10,7 +10,7 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 flex">
                         <div class="flex" style="width:20%">
                                 <li class="nav-item">
-                            <a class="nav-link active flex_center" style="display:flex" aria-current="page" href="/">
+                                    <a class="nav-link active flex_center" style="display:flex" aria-current="page" href="/">
                                         <lord-icon src="https://cdn.lordicon.com/slduhdil.json"
                                                    class="lord_icon"
                                                    trigger="hover"
@@ -22,30 +22,34 @@
                                         </lord-icon>
                                     </a>
                                 </li>
-                            </div>
+                        </div>
                         <div>
-                    @if(!string.IsNullOrEmpty(jwt)){
-                            <li class="nav-item">
-                                <a class="nav-link active color_white" aria-current="page" href="/">Consultation</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link active color_white" aria-current="page" href="/" @onclick="logout">Logout</a>
-                            </li>
-                    }
-                    else
-                    {
+                            @if(!string.IsNullOrEmpty(jwt)){
+                                    <li class="nav-item">
+                                        <a class="nav-link active color_white" aria-current="page" href="/">Consultation</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link active color_white" aria-current="page" href="/" @onclick="logout">Logout</a>
+                                    </li>
+                                    <a class="nav-item" href="/chat">
+                                        <lord-icon src="https://cdn.lordicon.com/hpivxauj.json"
+                                                   trigger="hover"
+                                                   colors="primary:#ffffff"
+                                                   state="intro"
+                                                   style="width:50px;height:50px">
+                                        </lord-icon>
+                                    </a>
+                            }
+                            else
+                            {
+                                    <li class="nav-item">
+                                        <a class="nav-link active color_white" aria-current="page" href="/login">Login</a>
+                                    </li>
 
-                            
-                            <li class="nav-item">
-                                <a class="nav-link active color_white" aria-current="page" href="/login">Login</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link active color_white" aria-current="page" href="/register">Register</a>
-                            </li>
-                    }
-
-                           
+                                    <li class="nav-item">
+                                        <a class="nav-link active color_white" aria-current="page" href="/register">Register</a>
+                                    </li>
+                            }
                         </div>
                     </ul>
                 </div>
@@ -70,6 +74,7 @@
     public async void logout()
     {
         await localStorage.RemoveItemAsync("token");
+        await localStorage.RemoveItemAsync("id");
     }
 
 }

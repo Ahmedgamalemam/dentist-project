@@ -1,4 +1,4 @@
-﻿active_delete(event) {
+﻿function active_delete(event) {
     let target_element = event.target;
     target_element.classList.toggle('active_delete');
     target_element?.parentElement?.classList.toggle('active_delete');
@@ -26,7 +26,7 @@ function queryselectall() {
         element.classList.remove('active_delete');
     });
 }
-openside() {
+function openside() {
     let openside = document.getElementById('openside');
     openside?.classList.remove('openside');
     let closeside = document.getElementById('closeside');
@@ -34,7 +34,7 @@ openside() {
     let side = document.getElementById('side');
     side?.classList.add('showside');
 }
-closeside() {
+function closeside() {
     let openside = document.getElementById('openside');
     openside?.classList.add('openside');
     let closeside = document.getElementById('closeside');
@@ -42,10 +42,17 @@ closeside() {
     let side = document.getElementById('side');
     side?.classList.remove('showside');
 }
-hideDelete_Update(e) {
+function hideDelete_Update(e) {
     let divToHide = document.getElementById('update_and_delete');
     if (divToHide == e.target) {
         this.update_message = null;
         this.delete_message = null;
     }
+}
+function filteredbutton(id){
+    let element = this.getbyidvalue(id)
+    element?.classList.add('back_purple_dark');
+}
+function scroll(id) {
+    this.getbyid(id).scrollIntoView()
 }

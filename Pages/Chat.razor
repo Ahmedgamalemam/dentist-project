@@ -17,15 +17,15 @@
                     </button>
                 }
                 @if ((delete_message.Rid == sid && delete_message.RidDelete == 0) ||
-               (delete_message.Sid == sid && delete_message.SidDelete == 0))
+                    (delete_message.Sid == sid && delete_message.SidDelete == 0))
                 {
                     <button class="rounded-pill" @onclick="delete_from_me">
                         <h3>Delete from me</h3>
                     </button>
                 }
                 @if ((this.delete_message.Rid == sid &&
-               this.delete_message.RidDelete == 1) ||
-               (this.delete_message.Sid == sid && this.delete_message.SidDelete == 1))
+                   this.delete_message.RidDelete == 1) ||
+                   (this.delete_message.Sid == sid && this.delete_message.SidDelete == 1))
                 {
                     <button class="rounded-pill" @onclick="delete">
                         <h3>Delete</h3>
@@ -78,12 +78,11 @@
     </div>
 }
 
-<div class="row"
-     style="width: 100%;position: relative;height: 100%;max-height: 100%;overflow-y: hidden;">
+<div class="row main_container">
 
     @if (chat != true)
     {
-        <div class="col-lg-8 col-md-8 col-sm-6 back_purple_dark flex_row_center" id="addressfield">
+        <div class="col-lg-8 col-md-8 col-sm-6 back_purple_dark flex_row_center" style="height:59.2rem" id="addressfield">
             <h1 class="color_white logo">
                 Fluffy <br />
                 Chat
@@ -125,7 +124,7 @@
                 {
                     <div id="@i">
                         @if (friend_Chat[i].Read != 2 && friend_Chat[i].Sid == rid &&
-                       unreadmessage != 0 && showUnreadMessageElement(i) == true)
+                            unreadmessage != 0 && showUnreadMessageElement(i) == true)
                         {
                             <div style="margin: 2rem 0rem;text-align: center;width: 100%;background-color: #ddd;"
                                  id="unreadmessages">
@@ -133,7 +132,7 @@
                             </div>
                         }
                         @if (!(friend_Chat[i].Rid == sid && friend_Chat[i].RidDelete >= 2) || friend_Chat[i].SidDelete >= 5 ||
-                       (friend_Chat[i].Sid == sid && friend_Chat[i].SidDelete >= 2) || showDate(i) == false)
+                            (friend_Chat[i].Sid == sid && friend_Chat[i].SidDelete >= 2) || showDate(i) == false)
                         {
                             <div class="color_white back_purple_dark message_date" style="display:flex">
                                 <h4 style="margin: auto">
@@ -150,22 +149,37 @@
                         }
 
                         @if (!(friend_Chat[i].Rid == sid && friend_Chat[i].RidDelete >= 1) ||
-                       friend_Chat[i].SidDelete >= 5 || (friend_Chat[i].Sid == sid && friend_Chat[i].SidDelete >= 1))
+                            friend_Chat[i].SidDelete >= 5 || (friend_Chat[i].Sid == sid && friend_Chat[i].SidDelete >= 1))
                         {
-                            <div [ngClass]="{sidparent: message.sid == sid,ridparent: message.sid != sid}"
-                                 style="display:flex" class="rounded-pill">
-                                <div class="msg_emojie_container"
-                                     [ngClass]="{
-                                            msg_emojie_container_sid: message.sid == sid,
-                                            msg_emojie_container_rid: message.sid != sid
-                                          }">
-                                    <div class="back_purple_light xxx" style="position: relative">
-                                        <div [ngClass]="{
-                                              sid: message.sid == sid,
-                                              rid_purple: message.sid != sid
-                                                }" style="position: relative">
+                            @if (@friend_Chat[i].Sid == sid)
+                            {
+                                Sidparent = "sidparent";
+                            }
+                            else if (@friend_Chat[i].Sid != sid)
+                            {
+                                Sidparent = "ridparent";
+                            }
+                            <div style="display:flex" class="rounded-pill @Sidparent">
+                                @if (@friend_Chat[i].Sid == sid)
+                                {
+                                    msg_emojie_container_sid = "msg_emojie_container_sid";
+                                }
+                                else if (@friend_Chat[i].Sid != sid)
+                                {
+                                    msg_emojie_container_sid = "msg_emojie_container_rid";
+                                }
 
-
+                                <div class="msg_emojie_container @msg_emojie_container_sid">
+                                    @if (@friend_Chat[i].Sid == sid)
+                                    {
+                                        sidmessage = "sid";
+                                    }
+                                    else if (@friend_Chat[i].Sid != sid)
+                                    {
+                                        sidmessage = "rid_purple";
+                                    }
+                                    <div class="back_purple_light xxx @sidmessage" style="position: relative">
+                                        <div style="position: relative">
                                             <p class="message_text">@friend_Chat[i].Txt</p>
                                             <p class="message_time">
                                                 @friend_Chat[i].Time
@@ -197,11 +211,11 @@
 
             <div class="back_purple_light flex_row"
                  style="padding: 1rem 3rem;width: 101.6%;margin-left: -0.8%;
-                            z-index: 2;position: relative;height: 9rem;">
+                        z-index: 2;position: relative;height: 9rem;">
 
                 <div class="input_message">
                     <div style="border: none" contenteditable="true" id="input"
-                    @onblur="sendIsTyping" @onfocus="sendIsTyping">
+                         @onblur="sendIsTyping" @onfocus="sendIsTyping">
                     </div>
                 </div>
 
@@ -244,7 +258,7 @@
                    type="search"
                    placeholder="Search"
                    aria-label="Search"
-            @onkeyup="searchFilter" />
+                   @bind="searchTerm" />
         </div>
         @if (toggle == true && users.Count == 0)
         {
@@ -273,13 +287,16 @@
                                         {{ user.countUnReadMs }}
                                     </p>
                                 }
+                                @if (user.CountUnReadMs != 0 && user.Id == user.Chat[user.Chat.Count - 1].Sid)
+                                {
+                                    left = "left";
+                                }
+                                else
+                                {
+                                    left = "right";
+                                }
                                 <div style="display: flex;flex-direction: column-reverse;overflow: hidden;position: relative;"
-                                     [ngStyle]="
-                                        user.countUnReadMs != 0 &&
-                                        user.id == user.chat[user.chat.length - 1].sid
-                                        ? { bottom: '3rem', left: '2rem' }
-                                        : { bottom: '0rem', left: '0rem' }
-                                    ">
+                                     class="@left">
                                     @foreach (var messages in user.Chat)
                                     {
                                         @if ((messages.Rid == sid && messages.RidDelete >= 1 && messages.RidDelete <= 5) ||
@@ -312,8 +329,5 @@
                 </a>
             </button>
         }
-
     </div>
-
-
 </div>

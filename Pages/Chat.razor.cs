@@ -10,23 +10,39 @@ using static System.Net.Mime.MediaTypeNames;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components.Forms;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Security.Cryptography;
+using dentist_api.Model;
+using static Azure.Core.HttpHeader;
 
 namespace dentist_project.Pages
 {
     public partial class Chat
     {
+        /// <summary>
+        /// /////// class property /////////////////
+        ///
+        public string Sidparent { get; set; } = "";
+        public string msg_emojie_container_sid { get; set; } = "";
+        public string MyProperty1 { get; set; }
+        public string sidmessage { get; set; } = "";
+        public string left { get; set; } = "";
+        /// </summary>
+        
+
         [Inject]
         public IChatTraditional chattraditional { get; set; }
         [Inject]
         public IJSRuntime Runtime { get; set; }
+        public string searchTerm { get; set; } = "";
+        public bool toggle { get; set; } = false;
         public string inputvalue { get; set; }
         public dentist_model.Chat delete_message { get; set; }
         public dentist_model.Chat update_message { get; set; }
         public string new_Message { get; set; }
         public int MyProperty { get; set; } = 0;
-        public bool chat { get; set; }
-        public bool toggle { get; set; }
+        public bool chat { get; set; } = false;
         public List<UserDtos> users { get; set; } = new List<UserDtos>();
+        public List<UserDtos> filteruser { get; set; }
         public UserDtos friend { get; set; }
         public List<dentist_model.Chat> friend_Chat { get; set; }
         public int messagesUnRead { get; set; } = 0;
@@ -43,22 +59,23 @@ namespace dentist_project.Pages
         }
         protected override async void OnAfterRender(bool firstRender)
         {
-            var users = await chattraditional.GetallMessage(sid);
-            sid = await localStorage.GetItemAsStringAsync("id");
-            foreach (var user in users)
-            {
-                foreach (var message in user.Chat)
-                {
-                    if (message.Read != 2 && message.Rid == sid)
-                    {
-                        user.CountUnReadMs++;
-                        unreadmessage = user.CountUnReadMs;
-                    }
-                }
+            await Runtime.InvokeVoidAsync("hidenave");
+            //var users = await chattraditional.GetallMessage(sid);
+            //sid = await localStorage.GetItemAsStringAsync("id");
+            //foreach (var user in users)
+            //{
+            //    foreach (var message in user.Chat)
+            //    {
+            //        if (message.Read != 2 && message.Rid == sid)
+            //        {
+            //            user.CountUnReadMs++;
+            //            unreadmessage = user.CountUnReadMs;
+            //        }
+            //    }
 
-                users.Add(user);
-            }
-            sortarray();
+            //    users.Add(user);
+            //}
+            //sortarray();
 
             StateHasChanged();
             base.OnAfterRender(firstRender);
@@ -66,308 +83,204 @@ namespace dentist_project.Pages
         }
 
 
-        //        sortarray()
-        //        {
-        //            this.users.sort(function(u1, u2) {
-        //                let user1_date = u1.chat[u1.chat.length - 1].date.replaceAll('-', '');
-        //                let user2_date = u2.chat[u2.chat.length - 1].date.replaceAll('-', '');
-        //                // let user1_time = u1.chat[u1.chat.length - 1].time.replaceAll(':', '');
-        //                // let user2_time = u2.chat[u2.chat.length - 1].time.replaceAll(':', '');
-        //                let u1_hrs;
-        //                let u2_hrs;
-        //                let u1_mins;
-        //                let u2_mins;
-        //                var user1_time = u1.chat[u1.chat.length - 1].time
-        //                    .split(' ')[1]
-        //                    .split(':')[0];
-        //                u1_hrs = u1.chat[u1.chat.length - 1].time.split(':')[0];
-        //                if (user1_time == 'pm')
-        //                {
-        //                    if (u1_hrs != '12')
-        //                    {
-        //                        u1_hrs = parseInt(u1_hrs) + 12;
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    u1_hrs = parseInt(u1_hrs);
-        //                }
-        //                u1_mins = u1.chat[u1.chat.length - 1].time.split(':')[1].split(' ')[0];
-        //                u1_mins = parseInt(u1_mins);
-        //                console.log(u1_mins);
+        public async void scroll()
+        {
+            if (friend_Chat.Count == friend.Chat.Count)
+            {
+                await Runtime.InvokeAsync<string>("scroll", (this.friend_Chat.Count - 1).ToString());
+            }
+        }
 
-        //                var user2_time = u2.chat[u2.chat.length - 1].time
-        //                    .split(' ')[1]
-        //                    .split(':')[0];
-        //                u2_hrs = u2.chat[u2.chat.length - 1].time.split(':')[0];
-        //                if (user2_time == 'pm')
-        //                {
-        //                    if (u2_hrs != '12')
-        //                    {
-        //                        u2_hrs = parseInt(u2_hrs) + 12;
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    u2_hrs = parseInt(u2_hrs);
-        //                }
-        //                u2_mins = u2.chat[u2.chat.length - 1].time.split(':')[1].split(' ')[0];
-        //                u2_mins = parseInt(u2_mins);
-        //                console.log(u2_mins);
 
-        //                user1_date = parseInt(user1_date);
-        //                user2_date = parseInt(user2_date);
-        //                user1_time = parseInt(user1_time);
-        //                user2_time = parseInt(user2_time);
-        //                if (user1_date > user2_date)
-        //                {
-        //                    return -1;
-        //                }
-        //                if (user1_date < user2_date)
-        //                {
-        //                    return 1;
-        //                }
-        //                if (user1_date == user2_date)
-        //                {
-        //                    if (u1_hrs > u2_hrs)
-        //                    {
-        //                        console.log(1);
+        private List<UserDtos> filteredProducts => users
+            .Where(user => user.Fname.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                   user.Lname.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            .ToList();
 
-        //                        return -1;
-        //                    }
-        //                    if (u1_hrs < u2_hrs)
-        //                    {
-        //                        console.log(2);
+        private string HighlightSearchTerm(string productName, string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return productName;
+            }
 
-        //                        return 1;
-        //                    }
-        //                    if (u1_hrs == u2_hrs)
-        //                    {
-        //                        if (u1_mins > u2_mins)
-        //                        {
-        //                            console.log(3);
+            var words = productName.Split(' ');
 
-        //                            return -1;
-        //                        }
-        //                        if (u1_mins < u2_mins)
-        //                        {
-        //                            console.log(4);
+            var highlightedWords = new List<string>();
 
-        //                            return 1;
-        //                        }
-        //                        if (u1_mins == u2_mins)
-        //                        {
-        //                            console.log(5);
+            foreach (var word in words)
+            {
+                if (word.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                {
+                    var highlightedWord = word.Replace(searchTerm, $"<span style='background-color: purple;color:white;'>{searchTerm}</span>");
+                    highlightedWords.Add(highlightedWord);
+                }
+                else
+                {
+                    highlightedWords.Add(word);
+                }
+            }
 
-        //                            return -1;
-        //                        }
-        //                    }
-        //                }
-        //                return 0;
-        //            });
-        //        }
-        //        lastSeen(seenMessage: any, sid: any)
-        //        {
-        //            this.users.forEach((element: any) => {
-        //                if (element.id == sid)
-        //                {
-        //                    if (seenMessage != 'Active Now')
-        //                    {
-        //                        element.seen = seenMessage;
-        //                    }
-        //                    else
-        //                    {
-        //                        element.seen = seenMessage;
-        //                    }
-        //                }
-        //            });
-        //        }
-        //        recieveMessage(message: any, sid: any)
-        //        {
-        //            this.users.forEach((element: any) => {
-        //                if (element.id == sid)
-        //                {
-        //                    element.chat.push(message);
-        //                    if (message.sid != this.rid)
-        //                    {
-        //                        element.countUnReadMs++;
-        //                        this.unreadmessage = element.countUnReadMs;
-        //                    }
-        //                    else
-        //                    {
-        //                        message.read = 2;
-        //                    }
-        //                }
-        //            });
-        //        }
-        //        sendMessageRecieved(sid: any, messagestatus: string, rid: any)
-        //        {
-        //            this.hubConnection
-        //                .invoke('MessageRecieved', sid, messagestatus, rid)
-        //                .then((r: any) => {
-        //                this.scroll();
-        //            })
-        //        .catch((err: any) => { });
-        //        }
-        //        messageRecieved(messagestatus: string, sid: any)
-        //        {
-        //            this.users.forEach((element: any) => {
-        //                if (element.id == sid)
-        //                {
-        //                    this.messageRecievedUpdate(element, messagestatus);
-        //                }
-        //            });
-        //        }
-        //        messageRecievedUpdate(element: any, messagestatus: any)
-        //        {
-        //            element.chat.forEach((ch: any) => {
-        //                if (messagestatus == 'recevied' && ch.sid == this.sid && ch.read == 0)
-        //                {
-        //                    ch.read = 1;
-        //                    this.chatTrad.updateMessage(ch).subscribe((response: any) => { });
-        //                }
-        //                else if (messagestatus == 'read' && ch.sid == this.sid)
-        //                {
-        //                    ch.read = 2;
-        //                    this.chatTrad.updateMessage(ch).subscribe((response: any) => { });
-        //                }
-        //                else if (ch.id == messagestatus.id)
-        //                {
-        //                    ch.sidMsgEmojie = messagestatus.sidMsgEmojie;
-        //                    ch.ridMsgEmojie = messagestatus.ridMsgEmojie;
-        //                    ch.sidDelete = messagestatus.sidDelete;
-        //                    ch.ridDelete = messagestatus.ridDelete;
-        //                    ch.txt = messagestatus.txt;
-        //                }
-        //            });
-        //        }
-        //        async sendMessagetoChat(message: any)
-        //        {
-        //            await this.users.forEach((element: any) => {
-        //                if (element.id == message.rid)
-        //                {
-        //                    element.chat.push(message);
-        //                    this.friend_Chat.push(message);
-        //                }
-        //            });
-        //            await this.sortarray();
-        //        }
-        //        filteruser: any = this.users;
-        //searchFilter(event: Event) {
-        //            this.users = this.filteruser;
-        //            let inputsearch = (event.target as HTMLInputElement).value;
-        //        console.log(inputsearch);
-        //    let spanOf_lname_Or_fname = document.querySelectorAll('span');
+            return string.Join(" ", highlightedWords);
+        }
 
-        //        spanOf_lname_Or_fname.forEach((element: any) => {
-        //        if (element.innerText.toLowerCase().includes(inputsearch.toLowerCase())) {
-        //            element.classList.remove('back_purple_dark');
-        //            element.classList.remove('back_green_dark');
-        //            element.classList.remove('back_yellow_dark');
-        //        }
-        //});
-        //let filter = this.users.filter(
-        //    (u: any) =>
 
-        //        u.fname.toLowerCase().includes(inputsearch.toLowerCase()) ||
-        //        u.lname.toLowerCase().includes(inputsearch.toLowerCase())
-        //);
-        //this.users = filter;
-        //spanOf_lname_Or_fname.forEach((element: any) => {
-        //    if (
-        //        element.innerText.toLowerCase().includes(inputsearch.toLowerCase()) &&
-        //        inputsearch != '' &&
-        //        inputsearch != null
-        //    )
-        //    {
-        //        console.log('color');
-        //        if (this.theme_color == 'purple')
-        //        {
-        //            element.classList.add('back_purple_dark');
-        //        }
-        //        else if (this.theme_color == 'green')
-        //        {
-        //            element.classList.add('back_green_dark');
-        //        }
-        //        else
-        //        {
-        //            element.classList.add('back_yellow_dark');
-        //        }
-        //    }
-        //});
-        //}
-        //toggle: boolean = false;
-        //buttonfilter() {
-        //    this.users = this.filteruser;
-        //    let buttonfilter = document.getElementById('buttonfilter');
-        //    if (this.toggle == false)
-        //    {
-        //        let filter = this.users.filter((u) => u.countUnReadMs > 0);
-        //        this.users = filter;
-        //        if (this.theme_color == 'purple')
-        //        {
-        //            buttonfilter?.classList.add('back_purple_dark');
-        //        }
-        //        else if (this.theme_color == 'green')
-        //        {
-        //            buttonfilter?.classList.add('back_green_dark');
-        //        }
-        //        else
-        //        {
-        //            buttonfilter?.classList.add('back_yellow_dark');
-        //        }
-        //        this.toggle = true;
-        //    }
-        //    else
-        //    {
-        //        let filter = this.users.filter((u) => u.countUnReadMs >= 0);
-        //        buttonfilter?.classList.remove('back_purple_dark');
-        //        buttonfilter?.classList.remove('back_green_dark');
-        //        buttonfilter?.classList.remove('back_yellow_dark');
-        //        this.users = filter;
-        //        this.toggle = false;
-        //    }
-        //}
-        //foreach_on_message(friend: any) {
-        //    let filter_Friend = friend.chat.filter(
-        //        (u: any) =>
-        //            (u.rid == this.sid && u.ridDelete < 2 && u.sidDelete < 2) ||
-        //            u.sidDelete < 2
-        //    );
-        //    this.friend_Chat = filter_Friend;
-        //    this.friend = friend;
-        //    this.rid = friend.id;
-        //}
-        //async message_friend(friend: any) {
-        //    this.chat = true;
+        public async void buttonfilter()
+        {
+            users = filteruser;
+            List<UserDtos > filteredUsers = new List<UserDtos>();
+            foreach(var user in users)
+            {
+                if (user.CountUnReadMs > 0)
+                {
+                    filteredUsers.Add(user);
+                }
+            }
+               users = filteredUsers;
+            if (toggle == false)
+            {
+                await Runtime.InvokeAsync<string>("filteredbutton", "buttonfilter");
+            }
+        }
 
-        //    if (this.rid != '' && friend.id != this.rid)
-        //    {
-        //        this.unreadmessage = 0;
-        //    }
 
-        //    await this.foreach_on_message(friend);
 
-        //    let user = this.users.filter((u) => u.id == friend.id);
-        //    if (user[0].countUnReadMs != 0)
-        //    {
-        //        if (user[0].chat[user[0].chat.length - 1].rid == this.sid)
-        //        {
-        //            user[0].countUnReadMs = 0;
-        //        }
-        //    }
-        //    await this.sendMessageRecieved(this.sid, 'read', this.rid);
-        //}
-        //scroll() {
-        //    if (this.friend_Chat.length == this.friend.chat.length)
-        //    {
-        //        console.log(1235466);
-        //        document
-        //            .getElementById((this.friend_Chat.length - 1).toString())!
-        //            .scrollIntoView();
-        //    }
-        //}
-        
+        public void lastSeen(string seenMessage, string sid)
+        {
+            foreach (var user in users)
+            {
+                if (user.Id == sid)
+                {
+                    user.Seen = seenMessage;
+                }
+            }
+        }
+
+
+        public void sendMessageRecieved(string sid, string messagestatus, string rid)
+        {
+            //this.hubConnection
+            //    .invoke('MessageRecieved', sid, messagestatus, rid)
+            //    .then((r: any) => {
+            //    this.scroll();
+            //})
+            //    .catch((err: any) => { });
+        }
+
+
+        public void sendMessagetoChat(dentist_model.Chat message)
+        {
+            foreach (var user in users)
+            {
+                if (user.Id == message.Rid)
+                {
+                    user.Chat.Add(message);
+                    friend_Chat.Add(message);
+                }
+            }
+            sortarray();
+        }
+
+
+        public void messageRecieved(string messagestatus, string sid)
+        {
+            foreach(var user in users) 
+            {
+                if(user.Id == sid)
+                {
+                    messageRecievedUpdate(user, messagestatus);
+
+                }
+            }
+        }
+        public void messageRecievedUpdate(UserDtos element,string messagestatus)
+        {
+            foreach( var message in element.Chat)
+            {
+                if (messagestatus == "recevied" && message.Sid == sid && message.Read == 0)
+                {
+                    message.Read = 1;
+                    chattraditional.UpdateUser(message);
+                }
+                else if (messagestatus == "read" && message.Sid == sid)
+                {
+                    message.Read = 2;
+                    chattraditional.UpdateUser(message);
+                }
+                ////////////////////Erorr/////////////////
+                ///
+                //else if (message.Id == messagestatus.id)
+                //{
+                //    //message.SidDelete = messagestatus.sidDelete;
+                //    //message.RidDelete = messagestatus.ridDelete;
+                //    //message.Txt = messagestatus.txt;
+                //}
+            }
+        }
+
+
+
+        public void recieveMessage(dentist_model.Chat message, string sid)
+        {
+            foreach (var user in users)
+            {
+                if (user.Id == sid)
+                {
+                    user.Chat.Add(message);
+                    if (message.Sid != rid)
+                    {
+                        user.CountUnReadMs++;
+                        unreadmessage = user.CountUnReadMs;
+                    }
+                    else
+                    {
+                        message.Read = 2;
+                    }
+                }
+            }
+        }
+
+        public void foreach_on_message(UserDtos friend)
+        {
+            foreach (var message in friend.Chat)
+            {
+                if ((message.Rid == this.sid && message.RidDelete < 2 && message.SidDelete < 2) || message.SidDelete < 2)
+                {
+                    this.friend_Chat.Add(message);
+                }
+            }
+        }
+        public void filter_UnRead_message(UserDtos friend)
+        {
+            foreach (var user in users)
+            {
+                if (user.Id == friend.Id && user.CountUnReadMs != 0 && user.Chat[user.Chat.Count - 1].Rid == sid)
+                {
+                    user.CountUnReadMs = 0;
+                }
+            }
+        }
+        public void message_friend(UserDtos friend)
+        {
+            this.friend = friend;
+            this.rid = friend.Id;
+            this.chat = true;
+
+            if (rid != "" && friend.Id != rid)
+            {
+                unreadmessage = 0;
+            }
+
+            foreach_on_message(friend);
+            filter_UnRead_message(friend);
+
+            sendMessageRecieved(sid, "read", rid);
+        }
+
+
+        /// <summary>
+        /// //////////////////////////////////////////////////////////////////////////////////////////
+        /// </summary>
         public void delete_from_all()
         {
             delete_message.SidDelete = 1;
@@ -375,13 +288,13 @@ namespace dentist_project.Pages
             updated_database(delete_message);
             foreach (var m in friend.Chat)
             {
-                if(m.Sid == sid && delete_message.Id.ToString() == m.SidMsgEmojie)
+                if (m.Sid == sid && delete_message.Id.ToString() == m.SidMsgEmojie)
                 {
                     m.SidDelete = 5;
                     updated_database(m);
                 }
             }
-           
+
             delete_message = null;
 
         }
@@ -390,7 +303,7 @@ namespace dentist_project.Pages
         public void updated_database(dentist_model.Chat message)
         {
             chattraditional.UpdateUser(message);
-          //send to hub
+            //send to hub
         }
 
 
@@ -404,7 +317,7 @@ namespace dentist_project.Pages
             {
                 delete_message.RidDelete = 1;
             }
-            foreach(var m in friend.Chat)
+            foreach (var m in friend.Chat)
             {
                 if (m.Sid == sid && delete_message.Id.ToString() == m.SidMsgEmojie)
                 {
@@ -412,7 +325,7 @@ namespace dentist_project.Pages
                     updated_database(m);
                 }
             }
-            
+
             delete_message = null;
         }
 
@@ -440,7 +353,7 @@ namespace dentist_project.Pages
         }
 
 
-        public void showEmojie_In_updateMsg(){}
+        public void showEmojie_In_updateMsg() { }
 
 
         public async void newmessage()
@@ -457,6 +370,11 @@ namespace dentist_project.Pages
         }
 
 
+        public void show_delete_message(dentist_model.Chat message)
+        {
+            delete_message = message;
+            Runtime.InvokeVoidAsync("queryselectall");
+        }
         public async void updatemessages()
         {
             var input_text = await Runtime.InvokeAsync<string>("getbyidvalue", "input");
@@ -471,15 +389,15 @@ namespace dentist_project.Pages
 
         public void sendIsTyping()
         {
-           // this.hubConnection
-           //.invoke('MessageRecieved', this.sid, message, this.rid)
-           //.then((r: any) => { })
-           // .catch((err: any) =>
-           // console.log('error while establishing signalr connection: ' + err));
+            // this.hubConnection
+            //.invoke('MessageRecieved', this.sid, message, this.rid)
+            //.then((r: any) => { })
+            // .catch((err: any) =>
+            // console.log('error while establishing signalr connection: ' + err));
         }
 
 
-        public async void sendmessage(string message = "",dentist_model.Chat obj = null)
+        public async void sendmessage(string message = "", dentist_model.Chat obj = null)
         {
             var fullDate = DateTime.Now.ToString("MM / dd / yyyy");
             var input_text = await Runtime.InvokeAsync<string>("getbyidvalue", "input");
@@ -521,19 +439,12 @@ namespace dentist_project.Pages
         }
 
 
-        public void message_friend(UserDtos user)
-        {
-
-        }
+  
         public void searchFilter(EventArgs e)
         {
 
         }
-        public void buttonfilter()
-        {
-
-        }
-
+       
 
         public async void openside()
         {
@@ -555,7 +466,7 @@ namespace dentist_project.Pages
 
         public async void hideDelete_Update(EventArgs e)
         {
-            await Runtime.InvokeVoidAsync("hideDelete_Update",e);
+            await Runtime.InvokeVoidAsync("hideDelete_Update", e);
         }
         public bool showDate(int i)
         {
@@ -570,11 +481,47 @@ namespace dentist_project.Pages
         }
         public int date(string date)
         {
-            return 1;
+            var oldDate = DateTime.ParseExact(date, "MM/dd/yyyy", null);
+            var newDate = fullDate;
+
+            if (
+                newDate.Year != oldDate.Year &&
+                newDate.Month == 1 &&
+                oldDate.Month == 12
+            )
+            {
+                if (oldDate.Day - newDate.Day <= 23)
+                {
+                    return 1;
+                }
+            }
+            else if (newDate.Year == oldDate.Year)
+            {
+                if (
+                    newDate.Month == oldDate.Month &&
+                    newDate.Day - oldDate.Day >= 7
+                )
+                {
+                    return 1;
+                }
+                else if (newDate.Month != oldDate.Month)
+                {
+                    if (
+                        (newDate.Month - oldDate.Month == 1 &&
+                            oldDate.Day - newDate.Day <= 23) ||
+                        newDate.Month - oldDate.Month >= 2
+                    )
+                    {
+                        return 1;
+                    }
+                }
+            }
+            return 2;
         }
         public int getday(string date)
         {
-            return 0;
+            var newDate = DateTime.ParseExact(date, "MM/dd/yyyy", null);
+            return newDate.Day;
         }
         public void getDay()
         {
@@ -592,13 +539,43 @@ namespace dentist_project.Pages
 
             return false;
         }
-        public void sortarray()
-        {
-
-        }
         public string handeltime()
         {
-            return " ";
+            var time = DateTime.Now.ToString("hh:mm tt");
+            return time;
+        }
+        public void sortarray()
+        {
+            users.Sort((a, b) =>
+            {
+                var a_date = DateTime.ParseExact(a.Chat[a.Chat.Count - 1].Date, "MM/dd/yyyy", null);
+                var b_date = DateTime.ParseExact(b.Chat[b.Chat.Count - 1].Date, "MM/dd/yyyy", null);
+                var a_time = DateTime.ParseExact(a.Chat[a.Chat.Count - 1].Time, "MM/dd/yyyy", null);
+                var b_time = DateTime.ParseExact(b.Chat[b.Chat.Count - 1].Time, "MM/dd/yyyy", null);
+
+                int result = b_date.Month.CompareTo(a_date.Month);
+                if (result == 0)
+                {
+                    result = b_date.Month.CompareTo(a_date.Month);
+                    if (result == 0)
+                    {
+                        result = b_date.Day.CompareTo(a_date.Day);
+                        if (result == 0)
+                        {
+                            result = b_time.Hour.CompareTo(a_time.Hour);
+                            if (result == 0)
+                            {
+                                result = b_time.Minute.CompareTo(a_time.Minute);
+                                if (result == 0)
+                                {
+                                    result = b_time.Second.CompareTo(a_time.Second);
+                                }
+                            }
+                        }
+                    }
+                }
+                return result;
+            });
         }
     }
 }
