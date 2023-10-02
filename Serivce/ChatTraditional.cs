@@ -17,21 +17,21 @@ namespace dentist_project.Serivce
         public async Task<List<UserDtos>> GetallMessage(string id)
         {
             return await JsonSerializer.DeserializeAsync<List<UserDtos>>
-                (await http.GetStreamAsync("/api/User" + id), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+                (await http.GetStreamAsync("/api/Chat" + "?id=" + id), new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
         }
 
-        public async void AddMessage(Chat mess)
+        public async Task<dentist_model.Chat> AddMessage(Chat mess)
         {
             var newuser = new StringContent(JsonSerializer.Serialize(mess), Encoding.UTF8, "application/json");
-            var response = await http.PostAsync("/api/User", newuser);
+            var response = await http.PostAsync("/api/Chat", newuser);
             var stream = await response.Content.ReadAsStreamAsync();
-            UserLoginDto t = await JsonSerializer.DeserializeAsync<UserLoginDto>(stream, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            return await JsonSerializer.DeserializeAsync<dentist_model.Chat>(stream, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
         }
 
         public async void UpdateUser(Chat mess)
         {
             var newuser = new StringContent(JsonSerializer.Serialize(mess), Encoding.UTF8, "application/json");
-            await http.PutAsync("/api/User", newuser);
+            await http.PutAsync("/api/Chat", newuser);
         }
     }
 }

@@ -120,93 +120,97 @@
                        padding: 2rem 1rem;height: 35rem;max-height: 35rem;margin-left: -1rem;" id="message">
             <div></div>
             <div>
-                @for (var i = 0; i < friend_Chat.Count; i++)
+                @if (friend_Chat.Count > 0)
                 {
-                    <div id="@i">
-                        @if (friend_Chat[i].Read != 2 && friend_Chat[i].Sid == rid &&
-                            unreadmessage != 0 && showUnreadMessageElement(i) == true)
-                        {
-                            <div style="margin: 2rem 0rem;text-align: center;width: 100%;background-color: #ddd;"
-                                 id="unreadmessages">
-                                (@unreadmessage) unread message
-                            </div>
-                        }
-                        @if (!(friend_Chat[i].Rid == sid && friend_Chat[i].RidDelete >= 2) || friend_Chat[i].SidDelete >= 5 ||
-                            (friend_Chat[i].Sid == sid && friend_Chat[i].SidDelete >= 2) || showDate(i) == false)
-                        {
-                            <div class="color_white back_purple_dark message_date" style="display:flex">
-                                <h4 style="margin: auto">
-                                    @if (date(friend_Chat[i].Date) == 1)
-                                    {
-                                        <span>@friend_Chat[i].Date</span>
-                                    }
-                                    else if (date(friend_Chat[i].Date) == 2)
-                                    {
-                                        <span>@weekDays[getday(friend_Chat[i].Date)]</span>
-                                    }
-                                </h4>
-                            </div>
-                        }
+                    @for (var i = 0; i < friend_Chat.Count; i++)
+                    {
+                        <div id="@i">
+                            @if (friend_Chat[i].Read != 2 && friend_Chat[i].Sid == rid &&
+                           unreadmessage != 0 && showUnreadMessageElement(i) == true)
+                            {
+                                <div style="margin: 2rem 0rem;text-align: center;width: 100%;background-color: #ddd;"
+                                     id="unreadmessages">
+                                    (@unreadmessage) unread message
+                                </div>
+                            }
+                            @if (!(friend_Chat[i].Rid == sid && friend_Chat[i].RidDelete >= 2) || friend_Chat[i].SidDelete >= 5 ||
+                           (friend_Chat[i].Sid == sid && friend_Chat[i].SidDelete >= 2) || showDate(i) == false)
+                            {
+                                <div class="color_white back_purple_dark message_date" style="display:flex">
+                                    <h4 style="margin: auto">
+                                        @if (date(friend_Chat[i].Date) == 1)
+                                        {
+                                            <span>@friend_Chat[i].Date</span>
+                                        }
+                                        else if (date(friend_Chat[i].Date) == 2)
+                                        {
+                                            <span>@getday(friend_Chat[i].Date)</span>
+                                        }
+                                    </h4>
+                                </div>
+                            }
 
-                        @if (!(friend_Chat[i].Rid == sid && friend_Chat[i].RidDelete >= 1) ||
-                            friend_Chat[i].SidDelete >= 5 || (friend_Chat[i].Sid == sid && friend_Chat[i].SidDelete >= 1))
-                        {
-                            @if (@friend_Chat[i].Sid == sid)
+                            @if (!(friend_Chat[i].Rid == sid && friend_Chat[i].RidDelete >= 1) ||
+                           friend_Chat[i].SidDelete >= 5 || (friend_Chat[i].Sid == sid && friend_Chat[i].SidDelete >= 1))
                             {
-                                Sidparent = "sidparent";
-                            }
-                            else if (@friend_Chat[i].Sid != sid)
-                            {
-                                Sidparent = "ridparent";
-                            }
-                            <div style="display:flex" class="rounded-pill @Sidparent">
                                 @if (@friend_Chat[i].Sid == sid)
                                 {
-                                    msg_emojie_container_sid = "msg_emojie_container_sid";
+                                    Sidparent = "sidparent";
                                 }
                                 else if (@friend_Chat[i].Sid != sid)
                                 {
-                                    msg_emojie_container_sid = "msg_emojie_container_rid";
+                                    Sidparent = "ridparent";
                                 }
-
-                                <div class="msg_emojie_container @msg_emojie_container_sid">
+                                <div style="display:flex" class="rounded-pill @Sidparent">
                                     @if (@friend_Chat[i].Sid == sid)
                                     {
-                                        sidmessage = "sid";
+                                        msg_emojie_container_sid = "msg_emojie_container_sid";
                                     }
                                     else if (@friend_Chat[i].Sid != sid)
                                     {
-                                        sidmessage = "rid_purple";
+                                        msg_emojie_container_sid = "msg_emojie_container_rid";
                                     }
-                                    <div class="back_purple_light xxx @sidmessage" style="position: relative">
-                                        <div style="position: relative">
-                                            <p class="message_text">@friend_Chat[i].Txt</p>
-                                            <p class="message_time">
-                                                @friend_Chat[i].Time
-                                                if(message.read == 0 && message.sid == sid){
-                                                <span style="font-size: 1.2rem"><i class="bi bi-check2"></i></span>
-                                                }else if(message.read != 0 && message.sid == sid){
-                                                @if (friend_Chat[i].Read == 2)
-                                                {
-                                                    <span style="font-size: 1.2rem;color: rgb(0, 247, 255)">
-                                                        <i class="bi bi-check2-all"></i>
-                                                    </span>
-                                                }
-                                                else
-                                                {
-                                                    <span style="font-size: 1.2rem;color: #999696">
-                                                        <i class="bi bi-check2-all"></i>
-                                                    </span>
-                                                }
-                                                }
-                                            </p>
+
+                                    <div class="msg_emojie_container @msg_emojie_container_sid">
+                                        @if (@friend_Chat[i].Sid == sid)
+                                        {
+                                            sidmessage = "sid";
+                                        }
+                                        else if (@friend_Chat[i].Sid != sid)
+                                        {
+                                            sidmessage = "rid_purple";
+                                        }
+                                        <div class="back_purple_light xxx @sidmessage" style="position: relative">
+                                            <div style="position: relative">
+                                                <p class="message_text">@friend_Chat[i].Txt</p>
+                                                <p class="message_time">
+                                                    @friend_Chat[i].Time
+                                                    if(message.read == 0 && message.sid == sid){
+                                                    <span style="font-size: 1.2rem"><i class="bi bi-check2"></i></span>
+                                                    }else if(message.read != 0 && message.sid == sid){
+                                                    @if (friend_Chat[i].Read == 2)
+                                                    {
+                                                        <span style="font-size: 1.2rem;color: rgb(0, 247, 255)">
+                                                            <i class="bi bi-check2-all"></i>
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span style="font-size: 1.2rem;color: #999696">
+                                                            <i class="bi bi-check2-all"></i>
+                                                        </span>
+                                                    }
+                                                    }
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        }
-                    </div>
+                            }
+                        </div>
+                    }
                 }
+               
             </div>
 
             <div class="back_purple_light flex_row"
@@ -215,7 +219,7 @@
 
                 <div class="input_message">
                     <div style="border: none" contenteditable="true" id="input"
-                         @onblur="sendIsTyping" @onfocus="sendIsTyping">
+                    @onblur="() => sendIsTyping('f')" @onfocus="() => sendIsTyping('t')">
                     </div>
                 </div>
 
@@ -266,68 +270,72 @@
                 <h6>no unread messages was found</h6>
             </div>
         }
-        @foreach (var user in users)
+        @if(users.Count > 0)
         {
-            <button style="height: 5rem; margin-bottom: 2rem; width: 100%" @onclick="() => message_friend(user)">
-                <a>
-                    <div class="row">
-                        <div class="col-3">
-                            <img src="@user.Image" class="image" />
-                        </div>
-                        <div class="col-9" style="overflow: hidden; height: 5rem">
-                            <h4 class="color_white">
-                                <span>@user.Fname </span>
-                                <span>@user.Lname </span>
-                            </h4>
-                            <div class="row">
-                                @if (user.CountUnReadMs != 0 && user.Id == user.Chat[user.Chat.Count - 1].Sid)
-                                {
-                                    <p style="width: 2.5rem;height: 2.5rem;padding: 0.5rem;display: inline-block;border-radius: 50%;color: white;"
-                                       class="back_yellow_dark col-3">
-                                        {{ user.countUnReadMs }}
-                                    </p>
-                                }
-                                @if (user.CountUnReadMs != 0 && user.Id == user.Chat[user.Chat.Count - 1].Sid)
-                                {
-                                    left = "left";
-                                }
-                                else
-                                {
-                                    left = "right";
-                                }
-                                <div style="display: flex;flex-direction: column-reverse;overflow: hidden;position: relative;"
-                                     class="@left">
-                                    @foreach (var messages in user.Chat)
+            @foreach (var user in users)
+            {
+                <button style="height: 5rem; margin-bottom: 2rem; width: 100%" @onclick="() => message_friend(user)">
+                    <a>
+                        <div class="row">
+                            <div class="col-3">
+                                <img src="@user.Image" class="image" />
+                            </div>
+                            <div class="col-9" style="overflow: hidden; height: 5rem">
+                                <h4 class="color_white">
+                                    <span>@user.Fname </span>
+                                    <span>@user.Lname </span>
+                                </h4>
+                                <div class="row">
+                                    @if (user.CountUnReadMs != 0 && user.Id == user.Chat[user.Chat.Count - 1].Sid)
                                     {
-                                        @if ((messages.Rid == sid && messages.RidDelete >= 1 && messages.RidDelete <= 5) ||
-                                       messages.SidDelete == 5 || (messages.Sid == sid && messages.SidDelete >= 1 && messages.SidDelete <= 5))
-                                        {
-                                            <div class="color_white col-9" style="overflow: hidden">
-                                                <p>
-                                                    @if (messages.Sid == sid && messages.SidDelete == 6)
-                                                    {
-                                                        <span>You</span>
-                                                    }
-                                                    else if (messages.Rid == sid && messages.SidDelete == 6)
-                                                    {
-                                                        <span>@user.Fname</span>
-                                                    }
-                                                    @messages.Txt
-                                                </p>
-                                            </div>
-                                        }
-
+                                        <p style="width: 2.5rem;height: 2.5rem;padding: 0.5rem;display: inline-block;border-radius: 50%;color: white;"
+                                           class="back_yellow_dark col-3">
+                                            @user.CountUnReadMs
+                                        </p>
                                     }
+                                    @if (user.CountUnReadMs != 0 && user.Id == user.Chat[user.Chat.Count - 1].Sid)
+                                    {
+                                        left = "left";
+                                    }
+                                    else
+                                    {
+                                        left = "right";
+                                    }
+                                    <div style="display: flex;flex-direction: column-reverse;overflow: hidden;position: relative;"
+                                         class="@left">
+                                        @foreach (var messages in user.Chat)
+                                        {
+                                            @if (!((messages.Rid == sid && messages.RidDelete >= 1 && messages.RidDelete <= 5) ||
+                                                messages.SidDelete == 5 || (messages.Sid == sid && messages.SidDelete >= 1 && messages.SidDelete <= 5)))
+                                            {
+                                                <div class="color_white col-9" style="overflow: hidden">
+                                                    <p>
+                                                        @if (messages.Sid == sid && messages.SidDelete == 6)
+                                                        {
+                                                            <span>You</span>
+                                                        }
+                                                        else if (messages.Rid == sid && messages.SidDelete == 6)
+                                                        {
+                                                            <span>@user.Fname</span>
+                                                        }
+                                                        @messages.Txt
+                                                    </p>
+                                                </div>
+                                            }
+
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    @if (user != users[users.Count - 1])
-                    {
-                        <hr />
-                    }
-                </a>
-            </button>
+                        @if (user != users[users.Count - 1])
+                        {
+                            <hr />
+                        }
+                    </a>
+                </button>
+            }
         }
+       
     </div>
 </div>

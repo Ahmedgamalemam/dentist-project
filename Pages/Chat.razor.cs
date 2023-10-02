@@ -13,6 +13,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.Security.Cryptography;
 using dentist_api.Model;
 using static Azure.Core.HttpHeader;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace dentist_project.Pages
 {
@@ -27,12 +28,13 @@ namespace dentist_project.Pages
         public string sidmessage { get; set; } = "";
         public string left { get; set; } = "";
         /// </summary>
-        
+
 
         [Inject]
         public IChatTraditional chattraditional { get; set; }
         [Inject]
         public IJSRuntime Runtime { get; set; }
+        public HubConnection hubConnection { get; set; }
         public string searchTerm { get; set; } = "";
         public bool toggle { get; set; } = false;
         public string inputvalue { get; set; }
@@ -44,7 +46,7 @@ namespace dentist_project.Pages
         public List<UserDtos> users { get; set; } = new List<UserDtos>();
         public List<UserDtos> filteruser { get; set; }
         public UserDtos friend { get; set; }
-        public List<dentist_model.Chat> friend_Chat { get; set; }
+        public List<dentist_model.Chat> friend_Chat { get; set; } = new List<dentist_model.Chat>();
         public int messagesUnRead { get; set; } = 0;
         public int unreadmessage { get; set; } = 0;
         public string sid { get; set; } = "";
@@ -53,35 +55,129 @@ namespace dentist_project.Pages
         public DateTime fullDate { get; set; } = new DateTime();
         public string[] weekDays { get; set; } = new string[7] { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
 
-        protected override void OnInitialized()
+
+
+        protected override async Task OnInitializedAsync()
         {
-            base.OnInitialized();
-        }
-        protected override async void OnAfterRender(bool firstRender)
-        {
-            await Runtime.InvokeVoidAsync("hidenave");
-            //var users = await chattraditional.GetallMessage(sid);
-            //sid = await localStorage.GetItemAsStringAsync("id");
-            //foreach (var user in users)
+            sid = await localStorage.GetItemAsync<string>("id");
+
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("https://localhost:7008/chat")
+                .Build();
+
+            await hubConnection.StartAsync();
+
+            hubConnection.On<dentist_model.Chat, string>("ReceiveMessage", (messageFromServer, sid) =>
+            {
+                recieveMessage(messageFromServer, sid);
+                sortarray();
+                if (rid == messageFromServer.Sid)
+                {
+                    this.sendMessageRecieved(this.sid, "read", messageFromServer.Sid);
+                    friend_Chat.Add(messageFromServer);
+                }
+                else
+                {
+                    this.sendMessageRecieved(this.sid, "recevied", messageFromServer.Sid);
+                }
+                StateHasChanged();
+            });
+
+            hubConnection.On<string, string>("Recieved", (messagestatus, sid) =>
+            {
+                messageRecieved(messagestatus, sid);
+                StateHasChanged();
+            });
+
+            //hubConnection.On<string, string>("typing", (messagestatus, sid) =>
             //{
-            //    foreach (var message in user.Chat)
+            //    foreach (var user in users)
             //    {
-            //        if (message.Read != 2 && message.Rid == sid)
+            //        if (user.Id == sid)
             //        {
-            //            user.CountUnReadMs++;
-            //            unreadmessage = user.CountUnReadMs;
+            //            user.Typing = messagestatus;
             //        }
             //    }
+            //    StateHasChanged();
+            //});
 
-            //    users.Add(user);
-            //}
-            //sortarray();
+            foreach (var user in users)
+            {
+                sendMessageRecieved(sid, "recevied", user.Id);
+            }
 
-            StateHasChanged();
+            hubConnection.On<dentist_model.Chat>("SendMessagetoChat", (messageFromServer) =>
+            {
+                sendMessagetoChat(messageFromServer);
+                StateHasChanged();
+            });
+
+            //hubConnection.On<string, string>("Seen", (seenMessage, sid) =>
+            //{
+            //    lastSeen(seenMessage, sid);
+            //    StateHasChanged();
+            //}); hubConnection.On<string, string>("LastSeen", (seenMessage, sid) =>
+            //{
+            //    lastSeen(seenMessage, sid);
+            //    StateHasChanged();
+            //});
+
+            hubConnection.On<string, string>("Deleted", (Message, sid) =>
+            {
+                foreach (var user in users)
+                {
+                    if (user.Id == sid)
+                    {
+                        messageRecievedUpdate(user, Message);
+                    }
+                }
+                StateHasChanged();
+            });
+
+            await hubConnection.SendAsync("SendId", sid);
+        }
+
+
+
+        protected override async void OnAfterRender(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await Runtime.InvokeVoidAsync("hidenave");
+
+
+                var users = await chattraditional.GetallMessage(sid);
+
+                if (users != null)
+                {
+                    foreach (var user in users)
+                    {
+                        if (user.Chat != null)
+                        {
+                            foreach (var message in user.Chat)
+                            {
+                                if (message.Read != 2 && message.Rid == sid)
+                                {
+                                    user.CountUnReadMs++;
+                                    unreadmessage = user.CountUnReadMs;
+                                }
+                            }
+                        }
+
+                        this.users.Add(user);
+                    }
+                }
+                //if (this.users.Count > 1)
+                //{
+                //    sortarray();
+                //}
+
+                StateHasChanged();
+            }
+           
             base.OnAfterRender(firstRender);
 
         }
-
 
         public async void scroll()
         {
@@ -128,15 +224,15 @@ namespace dentist_project.Pages
         public async void buttonfilter()
         {
             users = filteruser;
-            List<UserDtos > filteredUsers = new List<UserDtos>();
-            foreach(var user in users)
+            List<UserDtos> filteredUsers = new List<UserDtos>();
+            foreach (var user in users)
             {
                 if (user.CountUnReadMs > 0)
                 {
                     filteredUsers.Add(user);
                 }
             }
-               users = filteredUsers;
+            users = filteredUsers;
             if (toggle == false)
             {
                 await Runtime.InvokeAsync<string>("filteredbutton", "buttonfilter");
@@ -157,14 +253,9 @@ namespace dentist_project.Pages
         }
 
 
-        public void sendMessageRecieved(string sid, string messagestatus, string rid)
+        public async void sendMessageRecieved(string sid, string messagestatus, string rid)
         {
-            //this.hubConnection
-            //    .invoke('MessageRecieved', sid, messagestatus, rid)
-            //    .then((r: any) => {
-            //    this.scroll();
-            //})
-            //    .catch((err: any) => { });
+            await hubConnection.SendAsync("MessageRecieved", messagestatus, sid);
         }
 
 
@@ -178,24 +269,27 @@ namespace dentist_project.Pages
                     friend_Chat.Add(message);
                 }
             }
-            sortarray();
+            //if (this.users.Count > 1)
+            //{
+            //    sortarray();
+            //}
         }
 
 
         public void messageRecieved(string messagestatus, string sid)
         {
-            foreach(var user in users) 
+            foreach (var user in users)
             {
-                if(user.Id == sid)
+                if (user.Id == sid)
                 {
                     messageRecievedUpdate(user, messagestatus);
 
                 }
             }
         }
-        public void messageRecievedUpdate(UserDtos element,string messagestatus)
+        public void messageRecievedUpdate(UserDtos element, string messagestatus)
         {
-            foreach( var message in element.Chat)
+            foreach (var message in element.Chat)
             {
                 if (messagestatus == "recevied" && message.Sid == sid && message.Read == 0)
                 {
@@ -300,10 +394,11 @@ namespace dentist_project.Pages
         }
 
 
-        public void updated_database(dentist_model.Chat message)
+        public async void updated_database(dentist_model.Chat message)
         {
             chattraditional.UpdateUser(message);
-            //send to hub
+
+            await hubConnection.SendAsync("DeleteMessage", message, sid, rid);
         }
 
 
@@ -382,18 +477,21 @@ namespace dentist_project.Pages
             updated_database(update_message);
             sendmessage($"updated{update_message.Txt}", update_message);
 
-            this.new_Message = null;
-            this.update_message = null;
+            new_Message = null;
+            update_message = null;
         }
 
 
-        public void sendIsTyping()
+        public async void sendIsTyping(char message)
         {
-            // this.hubConnection
-            //.invoke('MessageRecieved', this.sid, message, this.rid)
-            //.then((r: any) => { })
-            // .catch((err: any) =>
-            // console.log('error while establishing signalr connection: ' + err));
+            if (message == 't')
+            {
+                await hubConnection.SendAsync("MessageRecieved", sid, "is typing...", rid);
+            }
+            else
+            {
+                await hubConnection.SendAsync("MessageRecieved", sid, "", rid);
+            }
         }
 
 
@@ -415,9 +513,9 @@ namespace dentist_project.Pages
                     RidDelete = 0,
                     Txt = input_text,
                 };
+                var response = chattraditional.AddMessage(chat);
+                await hubConnection.SendAsync("SendMessage", response, sid, rid);
 
-                //send to hub
-                //input?.replaceChildren();
                 inputvalue = "";
             }
             else
@@ -431,20 +529,20 @@ namespace dentist_project.Pages
                     Read = 0,
                     SidDelete = 6,
                     RidDelete = 0,
-                    Txt = input_text,
+                    Txt = message,
                 };
-
-                //send to hub
+                var response = chattraditional.AddMessage(chat);
+                await hubConnection.SendAsync("SendMessage", response, sid, rid);
             }
         }
 
 
-  
+
         public void searchFilter(EventArgs e)
         {
 
         }
-       
+
 
         public async void openside()
         {
@@ -458,15 +556,19 @@ namespace dentist_project.Pages
         }
 
 
-        public void active_delete(EventArgs e)
+        public async void active_delete(EventArgs e)
         {
-
+            await Runtime.InvokeVoidAsync("active_delete", e);
         }
-
 
         public async void hideDelete_Update(EventArgs e)
         {
-            await Runtime.InvokeVoidAsync("hideDelete_Update", e);
+            var response = await Runtime.InvokeAsync<bool>("hideDelete_Update", e);
+            if (response == true)
+            {
+                update_message = null;
+                delete_message = null;
+            }
         }
         public bool showDate(int i)
         {
@@ -481,6 +583,7 @@ namespace dentist_project.Pages
         }
         public int date(string date)
         {
+            date = date.Replace(" ", "");
             var oldDate = DateTime.ParseExact(date, "MM/dd/yyyy", null);
             var newDate = fullDate;
 
@@ -518,14 +621,12 @@ namespace dentist_project.Pages
             }
             return 2;
         }
-        public int getday(string date)
+        public string getday(string date)
         {
+            date = date.Replace(" ", "");
             var newDate = DateTime.ParseExact(date, "MM/dd/yyyy", null);
-            return newDate.Day;
-        }
-        public void getDay()
-        {
-
+             var newDatestring = newDate.ToString("dddd");
+            return newDatestring;
         }
         public bool showUnreadMessageElement(int i)
         {

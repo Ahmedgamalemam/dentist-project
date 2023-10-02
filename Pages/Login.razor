@@ -11,7 +11,7 @@
 
 
     <label htmlFor="inputEmail" class="fw-bold"> Email </label>
-    <div class="mb-3 input-container">
+        <div class="mb-3 input-container shadow p-3 mb-5 bg-white rounded">
       <InputText
         id="inputEmail"
         class="form-control input_i"
@@ -20,7 +20,7 @@
         placeholder="Enter your email"
         autofocus
       />
-      <i class="fas fa-envelope icon"></i>
+      <i class="fas fa-envelope icon "></i>
     </div>
     <ValidationMessage For="@(() => login.Email)" style="text-align:center" />
 

@@ -38,14 +38,14 @@
 </div>
 
 
-<Sliderden/>
+<Sliderden />
 @code {
     [Inject]
     public IJSRuntime navjs { get; set; }
-    protected override async void OnAfterRender(bool firstRender)
-    {
-        await navjs.InvokeVoidAsync("shownave");
-    }
+    //protected override async void OnAfterRender(bool firstRender)
+    //{
+    //    await navjs.InvokeVoidAsync("shownave");
+    //}
     public void show_div()
     {
         navjs.InvokeVoidAsync("show_div");
